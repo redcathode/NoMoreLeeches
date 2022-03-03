@@ -1,0 +1,58 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0308
+header_name {.h}
+code_name {.cxx}
+class main_window {open
+} {
+  Function {main_window()} {open
+  } {
+    Fl_Window NMLRootWindow {
+      label {NoMoreLeeches v0.1} open
+      xywh {1434 32 315 465} type Single labelfont 4 visible
+    } {
+      Fl_Button ToggleNMLButton {
+        label {Disable NML
+(currently enabled)}
+        tooltip {Disable or enable NML.} xywh {10 10 140 60} type Toggle
+      }
+      Fl_Text_Editor BlockedWindownamesEdit {
+        label {Blocked Window Classes (one per line)}
+        tooltip {If a window's class is in this list, it'll be blocked.} xywh {10 100 295 140} align 5
+      }
+      Fl_Text_Editor BlockedWildcardsEdit {
+        label {Blocked Wildcards (one per line)} selected
+        tooltip {If any of these strings are found in a window's name, that window will be blocked.} xywh {10 270 295 130} align 5
+      }
+      Fl_Button OpenUpdatePage {
+        label {Open Update Page}
+        callback {fl_open_uri("https://github.com/asolidtime/spyr/releases");}
+        tooltip {Opens NML's download page. Make sure to get the newest version!} xywh {165 10 140 20}
+        code0 {\#include <FL/filename.H>}
+      }
+      Fl_Button OpenAboutPage {
+        label About
+        tooltip {Show information about NML.} xywh {165 30 140 20}
+      }
+      Fl_Button SaveBlocklistButton {
+        label {Save Blocklist}
+        xywh {165 50 140 20}
+      }
+      Fl_Text_Display {} {
+        label {Window Name:}
+        xywh {10 377 50 30} box NO_BOX labelsize 13 align 6
+      }
+      Fl_Text_Display {} {
+        label {Window Class:}
+        xywh {10 406 50 30} box NO_BOX labelsize 13 align 6
+      }
+      Fl_Output CurrentWindowNameOutput {
+        xywh {115 403 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+      }
+      Fl_Output CurrentWindowClassOutput {
+        xywh {115 432 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+      }
+    }
+  }
+  Function {} {open
+  } {}
+}
