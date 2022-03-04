@@ -3,7 +3,7 @@
 #include "main_window.h"
 
 void main_window::cb_OpenUpdatePage_i(Fl_Button*, void*) {
-  fl_open_uri("https://github.com/asolidtime/spyr/releases");
+  fl_open_uri("https://github.com/asolidtime/nomoreleeches/releases");
 }
 void main_window::cb_OpenUpdatePage(Fl_Button* o, void* v) {
   ((main_window*)(o->parent()->user_data()))->cb_OpenUpdatePage_i(o,v);

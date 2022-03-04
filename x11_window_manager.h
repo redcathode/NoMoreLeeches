@@ -26,7 +26,12 @@ class x11_window_manager {
         x11_window_manager();
         std::string active_window_name;
         std::string active_window_class;
+        int focusedWindowX;
+        int focusedWindowY;
+        int focusedWindowWidth;
+        int focusedWindowHeight;
         bool update(); // returns true if successful
+        void minimize_window();
     private:
         Display* d;
         Window w;

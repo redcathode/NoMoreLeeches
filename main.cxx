@@ -5,11 +5,14 @@
 #include <iostream>
 #include <fstream>
 #include <experimental/filesystem> // or #include <filesystem> for C++17 and up
+#include <algorithm>
+
     
 namespace fs = std::experimental::filesystem;
 
 
 #include "main_window.h"
+#include "blocked_window.h"
 #define WINDOW_CHECK_TIMES_PER_SECOND 0.5
 
 #ifdef _WIN32 // TODO: actual windows support
@@ -25,6 +28,7 @@ Fl_Text_Buffer windNamesBuf;
 std::string configPath;
 main_window *mainWindow = new main_window();
 bool enabled = false;
+blocked_window *blockedWindow = NULL;
 
 std::vector<std::string> split_string(const std::string& str,
                                       const std::string& delimiter)
@@ -58,10 +62,11 @@ void save_blocklists(Fl_Widget*) {
   Fl::add_timeout(0.7, blocklistSavedCallback);
 }
 void toggleNMLEnable(Fl_Widget*) {
-  if (mainWindow->ToggleNMLButton->value()) {
-    std::cout << "Enabled" << std::endl;
+  enabled = !enabled;
+  if (enabled) {
+    mainWindow->ToggleNMLButton->label("Enable NML\n(currently disabled)");
   } else {
-    std::cout << "Disabled" << std::endl;
+    mainWindow->ToggleNMLButton->label("Disable NML\n(currently enabled)");
   }
 }
 std::string getConfigDir() {
@@ -93,9 +98,26 @@ void doThingWithWindows(void*) {
       mainWindow->CurrentWindowClassOutput->value(windowManager->active_window_class.c_str());
       mainWindow->CurrentWindowNameOutput->value(windowManager->active_window_name.c_str());
     }
-  } else {
-    mainWindow->CurrentWindowClassOutput->value("(error getting window name)");
-    mainWindow->CurrentWindowNameOutput->value("(error getting window name)");
+   } //else { // commenting this out as we should just keep the last window that was grabbed successfully
+  //   mainWindow->CurrentWindowClassOutput->value("(error getting window name)");
+  //   mainWindow->CurrentWindowNameOutput->value("(error getting window name)");
+  // }
+  std::vector<std::string> classBlockList = split_string(windNamesBuf.text(), "\n");
+  if (std::count(classBlockList.begin(), classBlockList.end(), windowManager->active_window_class)) {
+    std::cout << "h" << std::endl;
+    if (blockedWindow == NULL) {
+      blockedWindow = new blocked_window();
+      blockedWindow->make_window(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
+      std::cout << windowManager->focusedWindowX << ":" << windowManager->focusedWindowY << ":" << windowManager->focusedWindowWidth << ":"  << windowManager->focusedWindowHeight << ":" << std::endl;
+      //blockedWindow->make_window(0, 0, 250, 250);
+      //std::cout << windowManager->focusedWindowX << std::endl;
+      windowManager->minimize_window();
+      //blockedWindow->BlockWindow->border(0);
+      // blockedWindow->BlockWindow->fullscreen();
+      blockedWindow->BlockWindow->show();
+
+      // Fl::grab(blockedWindow->BlockWindow);
+    }
   }
   Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
 }

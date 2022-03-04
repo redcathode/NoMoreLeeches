@@ -3,8 +3,8 @@ CC  = $(shell fltk-config --cc)
 CXX = $(shell fltk-config --cxx)
 
 # Set the flags for compiler: fltk-config knows the basic settings, then we can add our own...
-CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall -O3 #-I/other/include/paths...
-CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -O3 -lstdc++fs #-I/other/include/paths...
+CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall #-I/other/include/paths...
+CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs #-I/other/include/paths...
 
 # We don't know what libraries to link with: fltk-config does...
 LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xmu) -lstdc++fs
@@ -29,12 +29,16 @@ x11_window_manager.o: x11_window_manager.cxx x11_window_manager.h xlib_window_gr
 main_window.o: main_window.cxx main_window.h xlib_window_grab.h  # a C++ file
 		$(CXX) -c $< $(CXXFLAGS)
 
-main.o: main.cxx main_window.h xlib_window_grab.h
+blocked_window.o: blocked_window.cxx blocked_window.h
 		$(CXX) -c $< $(CXXFLAGS)
 
+main.o: main.cxx main_window.h xlib_window_grab.h blocked_window.h
+		$(CXX) -c $< $(CXXFLAGS)
+
+
 # Now define how to link the final app - let's assume it needs image and OpenGL support
-NoMoreLeeches:  main.o xlib_window_grab.o main_window.o x11_window_manager.o
-		$(CXX) -o $@ main.o xlib_window_grab.o main_window.o x11_window_manager.o $(LINKFLTK)
+NoMoreLeeches:  main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o
+		$(CXX) -o $@ main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o $(LINKFLTK)
 		$(STRIP) $@
 		$(POSTBUILD) $@  # only required on OSX, but call it anyway for portability
 
