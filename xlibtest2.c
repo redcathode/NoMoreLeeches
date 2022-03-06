@@ -2,7 +2,6 @@
 // get the active window on X window system
 //
 
-
 #define _GNU_SOURCE
 
 #include <stdlib.h>
@@ -11,6 +10,9 @@
 
 #include <X11/Xlib.h>           // `apt-get install libx11-dev`
 #include <X11/Xmu/WinUtil.h>    // `apt-get install libxmu-dev`
+#include <unistd.h>
+
+
 
 Bool xerror = False;
 
@@ -160,8 +162,22 @@ Window get_active_window(Display* d) {
   w = get_named_window(d, w);
   return w;
 }
+void maximizeWindow(Window win, Display* display) {
+
+      XEvent ev;
+      ev.xclient.window = win;
+      ev.xclient.type = ClientMessage;
+      ev.xclient.format = 32;
+      ev.xclient.message_type = XInternAtom(display, "_NET_WM_STATE", False);
+      ev.xclient.data.l[0] = 1;
+      ev.xclient.data.l[1] = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+      ev.xclient.data.l[2] = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+      ev.xclient.data.l[3] = 1;
+
+      XSendEvent(display, DefaultRootWindow(display), False, SubstructureRedirectMask | SubstructureNotifyMask, &ev);
+      XCloseDisplay(display);
+    }
 void minimize_window(Window w, Display* d) {
-  printf("minimizing window");
   int screen;
 
   XWindowAttributes attr;
@@ -176,19 +192,23 @@ void restore_window(Window w, Display* d) {
   int B;
   XGetInputFocus(d, &w, &B);
 }
-// int main(void){
-//   Display* d;
-//   Window w;
+int main(void){
+  Display* d;
+  Window w;
 
-//   // for XmbTextPropertyToTextList
-//   setlocale(LC_ALL, ""); // see man locale
+  // for XmbTextPropertyToTextList
+  setlocale(LC_ALL, ""); // see man locale
 
-//   d = open_display();
-//   XSetErrorHandler(handle_error);
+  d = open_display();
+  XSetErrorHandler(handle_error);
 
-//   // get active window
-//   w = get_active_window(d);
+  // get active window
+  w = get_active_window(d);
 
-//   print_window_info(d, w);
-//   XIconifyWindow(d, w, 0); 
-// }
+  // print_window_info(d, w);
+  
+  //maximizeWindow(w, d);
+  minimize_window(w, d);
+  sleep(1);
+  restore_window(w, d);
+}

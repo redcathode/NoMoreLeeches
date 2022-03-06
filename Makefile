@@ -44,3 +44,6 @@ NoMoreLeeches:  main.o xlib_window_grab.o main_window.o x11_window_manager.o blo
 
 clean: 
 	rm *.o NoMoreLeeches
+
+run: NoMoreLeeches
+	./NoMoreLeeches

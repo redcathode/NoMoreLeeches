@@ -31,10 +31,12 @@ class x11_window_manager {
         int focusedWindowWidth;
         int focusedWindowHeight;
         bool update(); // returns true if successful
-        void minimize_window();
+        bool is_currently_active_window_owned_by_us();
+        void toggle_window_state(bool shouldUpdate);
     private:
         Display* d;
         Window w;
+        bool windowIsMinimized;
 };
 
 #endif

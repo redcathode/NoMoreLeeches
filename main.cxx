@@ -28,8 +28,21 @@ Fl_Text_Buffer windNamesBuf;
 std::string configPath;
 main_window *mainWindow = new main_window();
 bool enabled = false;
-blocked_window *blockedWindow = NULL;
+bool currentlyBlocking = false;
+blocked_window *blockedWindow = nullptr;
+int defaultSecondsLeft = 15;
+int currentSecondsLeft = 15;
+bool timerIsStopped = true;
+std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
+int violations = 0;
 
+bool str_replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
 std::vector<std::string> split_string(const std::string& str,
                                       const std::string& delimiter)
 {
@@ -48,8 +61,46 @@ std::vector<std::string> split_string(const std::string& str,
 
     return strings;
 }
+void minimizeWindowTimeout(void*) {
+    blockedWindow->BlockWindow->show();
+    blockedWindow->BlockWindow->resize(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
+    windowManager->toggle_window_state(false);
+}
+void showBrieflyCallback(Fl_Widget*) {
+    windowManager->toggle_window_state(false);
+    blockedWindow->BlockWindow->hide();
+    currentSecondsLeft = 60;
+    Fl::add_timeout(5.0, minimizeWindowTimeout);
+}
 void blocklistSavedCallback(void*) {
   mainWindow->SaveBlocklistButton->label("Save Blocklists");
+}
+void tickWindowShowTimer(void*) {
+  if (blockedWindow == nullptr) {
+    return;
+  }
+  currentSecondsLeft -= 1;
+  if (!windowManager->is_currently_active_window_owned_by_us()) {
+    currentSecondsLeft = 60;
+    std::cout << "resetting timer";
+  }
+  //blockedWindow->WaitDisplay->label();
+  std::string timerText;
+  timerText = "If you really want to access this window,\nwait secks:flushed: seconds.";
+  std::string timerNum = std::to_string(currentSecondsLeft);
+  str_replace(timerText, "secks:flushed:", timerNum);
+  char *timerChar = new char[timerText.size() + 1];
+  std::copy(timerText.begin(), timerText.end(), timerChar);
+  blockedWindow->WaitDisplay->label(timerChar);
+  if (currentSecondsLeft == 0) {
+    currentOkClass = windowManager->active_window_class;
+    blockedWindow->BlockWindow->hide();
+    delete blockedWindow;
+    blockedWindow = nullptr;
+    windowManager->toggle_window_state(true);
+  } else {
+    Fl::repeat_timeout(1.0, tickWindowShowTimer);
+  }
 }
 void save_blocklists(Fl_Widget*) {
   std::ofstream wildcardsFile;
@@ -69,6 +120,7 @@ void toggleNMLEnable(Fl_Widget*) {
     mainWindow->ToggleNMLButton->label("Disable NML\n(currently enabled)");
   }
 }
+
 std::string getConfigDir() {
   std::string path;
   if (const char* env_p = std::getenv("APPDATA")) {
@@ -92,9 +144,17 @@ std::string getConfigDir() {
   return path;
 }
 void doThingWithWindows(void*) {
-  if (windowManager->update()) {
+  std::cout << currentOkClass << std::endl;
+  if (blockedWindow == nullptr && windowManager->update()) {
+    if (windowManager->active_window_class == currentOkClass || windowManager->is_currently_active_window_owned_by_us()) {
+      std::cout << "active window class: " << windowManager->active_window_class << std::endl;
+      Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
+      return;
+    } else {
+      currentOkClass = "hopefully there isn't a window matching this text exactly";
+    }
     // std::cout << windowManager->active_window_class << std::endl;
-    if (windowManager->active_window_class != "FLTK") {
+    if (windowManager->active_window_class != "FLTK") { // todo: this will also whitelist other fltk apps. unimportant, since no apps that people actually use are written in fltk
       mainWindow->CurrentWindowClassOutput->value(windowManager->active_window_class.c_str());
       mainWindow->CurrentWindowNameOutput->value(windowManager->active_window_name.c_str());
     }
@@ -104,23 +164,42 @@ void doThingWithWindows(void*) {
   // }
   std::vector<std::string> classBlockList = split_string(windNamesBuf.text(), "\n");
   if (std::count(classBlockList.begin(), classBlockList.end(), windowManager->active_window_class)) {
-    std::cout << "h" << std::endl;
-    if (blockedWindow == NULL) {
+    //std::cout << "h" << std::endl;
+    if (blockedWindow == nullptr) {
+      currentlyBlocking = true;
       blockedWindow = new blocked_window();
-      blockedWindow->make_window(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
-      std::cout << windowManager->focusedWindowX << ":" << windowManager->focusedWindowY << ":" << windowManager->focusedWindowWidth << ":"  << windowManager->focusedWindowHeight << ":" << std::endl;
+      blockedWindow->make_window();
+      blockedWindow->BlockWindow->resize(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
+      std::cout << windowManager->focusedWindowX << ":" << windowManager->focusedWindowY << ":" << windowManager->focusedWindowWidth << ":"  << windowManager->focusedWindowHeight <<  std::endl;
+      std::string reasonText = "Reason: 'windowclass' matched item in blocked window class list";
+      std::string windowText = "Window 'windowname' blocked.";
+      std::string applicationName = windowManager->active_window_name;
+      std::string applicationGame = windowManager->active_window_class;
+      str_replace(reasonText, "windowclass", applicationGame);
+      str_replace(windowText, "windowname", applicationName);
+      char *reasonChar = new char[reasonText.size() + 1];
+      std::copy(reasonText.begin(), reasonText.end(), reasonChar);
+
+      char *windowChar = new char[windowText.size() + 1];
+      std::copy(windowText.begin(), windowText.end(), windowChar);
+      blockedWindow->ReasonDisplay->label(reasonChar);
+      blockedWindow->WindowHiddenDisplay->label(windowChar);
       //blockedWindow->make_window(0, 0, 250, 250);
       //std::cout << windowManager->focusedWindowX << std::endl;
-      windowManager->minimize_window();
+      windowManager->toggle_window_state(true);
       //blockedWindow->BlockWindow->border(0);
       // blockedWindow->BlockWindow->fullscreen();
       blockedWindow->BlockWindow->show();
+      blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
+      Fl::add_timeout(1.0, tickWindowShowTimer);
+      
 
       // Fl::grab(blockedWindow->BlockWindow);
     }
   }
   Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
 }
+
 void setColor(int one, int two, int three, int four) {
   Fl::set_color(Fl_Color(one), two, three, four);
 }

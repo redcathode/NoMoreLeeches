@@ -2,8 +2,8 @@
 
 #include "blocked_window.h"
 
-Fl_Window* blocked_window::make_window(int x, int y, int width, int height) {
-  { BlockWindow = new Fl_Window(x, y, width, height, "NML: Application Hidden");
+Fl_Window* blocked_window::make_window() {
+  { BlockWindow = new Fl_Window(420, 420, "NML: Application Hidden");
     BlockWindow->user_data((void*)(this));
     { ReasonDisplay = new Fl_Text_Display(185, 145, 50, 30, "Reason:");
       ReasonDisplay->box(FL_NO_BOX);

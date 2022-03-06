@@ -8,5 +8,7 @@ extern "C" {
     Window get_active_window(Display* d);
     int get_window_name(Display* d, Window w, char** charReturn);
     int get_window_class(Display* d, Window w, char** charReturn);
+    void minimize_window(Window w, Display* d);
+    void restore_window(Window w, Display* d);
 }
 #endif

@@ -9,7 +9,7 @@
 
 class blocked_window {
 public:
-  Fl_Window* make_window(int x, int y, int width, int height);
+  Fl_Window* make_window();
   Fl_Window *BlockWindow;
   Fl_Text_Display *ReasonDisplay;
   Fl_Text_Display *WindowHiddenDisplay;

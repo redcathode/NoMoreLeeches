@@ -4,10 +4,10 @@ header_name {.h}
 code_name {.cxx}
 class blocked_window {open
 } {
-  Function {make_window(int x, int y, int width, int height)} {open
+  Function {make_window()} {open selected
   } {
     Fl_Window BlockWindow {
-      label {NML: Application Hidden} open selected
+      label {NML: Application Hidden} open
       xywh {1303 588 420 420} type Single resizable visible
     } {
       Fl_Text_Display ReasonDisplay {
