@@ -49,14 +49,23 @@ bool x11_window_manager::is_currently_active_window_owned_by_us() {
         return false;
     }
 }
+void x11_window_manager::minimize_active_window() {
+    windowIsMinimized = true;
+    minimize_window(w, d);
+}
+void x11_window_manager::show_active_window() {
+    windowIsMinimized = false;
+    restore_window(w, d);
+}
+
 void x11_window_manager::toggle_window_state(bool shouldUpdate) {
-    
+
     if (windowIsMinimized) {
         restore_window(w, d);
     } else {
         minimize_window(w, d);
     }
     windowIsMinimized = !windowIsMinimized;
-    
+
     //if (shouldUpdate) update();
 }

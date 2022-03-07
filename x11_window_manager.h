@@ -33,6 +33,8 @@ class x11_window_manager {
         bool update(); // returns true if successful
         bool is_currently_active_window_owned_by_us();
         void toggle_window_state(bool shouldUpdate);
+        void minimize_active_window();
+        void show_active_window();
     private:
         Display* d;
         Window w;

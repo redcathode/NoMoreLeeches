@@ -9,6 +9,7 @@
 #include <FL/filename.H>
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Choice.H>
 
 class main_window {
 public:
@@ -26,5 +27,7 @@ public:
   Fl_Button *SaveBlocklistButton;
   Fl_Output *CurrentWindowNameOutput;
   Fl_Output *CurrentWindowClassOutput;
+  Fl_Choice *ColorThemeChooser;
+  static Fl_Menu_Item menu_ColorThemeChooser[];
 };
 #endif

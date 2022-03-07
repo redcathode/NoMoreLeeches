@@ -9,19 +9,27 @@ void main_window::cb_OpenUpdatePage(Fl_Button* o, void* v) {
   ((main_window*)(o->parent()->user_data()))->cb_OpenUpdatePage_i(o,v);
 }
 
+Fl_Menu_Item main_window::menu_ColorThemeChooser[] = {
+ {"Dark", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"Black", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"Gray", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"Tan", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"Shake", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
+
 main_window::main_window() {
-  { NMLRootWindow = new Fl_Window(315, 465, "NoMoreLeeches v0.1");
+  { NMLRootWindow = new Fl_Window(315, 485, "NoMoreLeeches v0.1");
     NMLRootWindow->labelfont(4);
     NMLRootWindow->user_data((void*)(this));
-    { ToggleNMLButton = new Fl_Button(10, 10, 140, 60, "Disable NML\n(currently enabled)");
+    { ToggleNMLButton = new Fl_Button(10, 10, 140, 60, "Enable NML\n(currently disabled)");
       ToggleNMLButton->tooltip("Disable or enable NML.");
-      ToggleNMLButton->type(1);
     } // Fl_Button* ToggleNMLButton
-    { BlockedWindownamesEdit = new Fl_Text_Editor(10, 100, 295, 140, "Blocked Window Classes (one per line)");
+    { BlockedWindownamesEdit = new Fl_Text_Editor(10, 118, 295, 140, "Blocked Window Classes (one per line)");
       BlockedWindownamesEdit->tooltip("If a window\'s class is in this list, it\'ll be blocked.");
       BlockedWindownamesEdit->align(Fl_Align(FL_ALIGN_TOP_LEFT));
     } // Fl_Text_Editor* BlockedWindownamesEdit
-    { BlockedWildcardsEdit = new Fl_Text_Editor(10, 270, 295, 130, "Blocked Wildcards (one per line)");
+    { BlockedWildcardsEdit = new Fl_Text_Editor(10, 280, 295, 130, "Blocked Wildcards (one per line)");
       BlockedWildcardsEdit->tooltip("If any of these strings are found in a window\'s name, that window will be bl\
 ocked.");
       BlockedWildcardsEdit->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -35,28 +43,32 @@ ocked.");
     } // Fl_Button* OpenAboutPage
     { SaveBlocklistButton = new Fl_Button(165, 50, 140, 20, "Save Blocklist");
     } // Fl_Button* SaveBlocklistButton
-    { Fl_Text_Display* o = new Fl_Text_Display(10, 377, 50, 30, "Window Name:");
+    { Fl_Text_Display* o = new Fl_Text_Display(10, 395, 50, 30, "Window Name:");
       o->box(FL_NO_BOX);
       o->labelsize(13);
       o->align(Fl_Align(FL_ALIGN_BOTTOM_LEFT));
     } // Fl_Text_Display* o
-    { Fl_Text_Display* o = new Fl_Text_Display(10, 406, 50, 30, "Window Class:");
+    { Fl_Text_Display* o = new Fl_Text_Display(10, 424, 50, 30, "Window Class:");
       o->box(FL_NO_BOX);
       o->labelsize(13);
       o->align(Fl_Align(FL_ALIGN_BOTTOM_LEFT));
     } // Fl_Text_Display* o
-    { CurrentWindowNameOutput = new Fl_Output(115, 403, 189, 28);
+    { CurrentWindowNameOutput = new Fl_Output(115, 421, 189, 28);
       CurrentWindowNameOutput->labeltype(FL_NO_LABEL);
       CurrentWindowNameOutput->labelfont(4);
       CurrentWindowNameOutput->textfont(4);
       CurrentWindowNameOutput->textsize(10);
     } // Fl_Output* CurrentWindowNameOutput
-    { CurrentWindowClassOutput = new Fl_Output(115, 432, 189, 28);
+    { CurrentWindowClassOutput = new Fl_Output(115, 450, 189, 28);
       CurrentWindowClassOutput->labeltype(FL_NO_LABEL);
       CurrentWindowClassOutput->labelfont(4);
       CurrentWindowClassOutput->textfont(4);
       CurrentWindowClassOutput->textsize(10);
     } // Fl_Output* CurrentWindowClassOutput
+    { ColorThemeChooser = new Fl_Choice(105, 75, 200, 20, "Color Theme:");
+      ColorThemeChooser->down_box(FL_BORDER_BOX);
+      ColorThemeChooser->menu(menu_ColorThemeChooser);
+    } // Fl_Choice* ColorThemeChooser
     NMLRootWindow->end();
   } // Fl_Window* NMLRootWindow
 }

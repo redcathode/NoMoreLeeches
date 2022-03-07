@@ -8,24 +8,24 @@ class main_window {open
   } {
     Fl_Window NMLRootWindow {
       label {NoMoreLeeches v0.1} open
-      xywh {1434 32 315 465} type Single labelfont 4 visible
+      xywh {1434 32 315 485} type Single labelfont 4 visible
     } {
       Fl_Button ToggleNMLButton {
-        label {Disable NML
-(currently enabled)}
-        tooltip {Disable or enable NML.} xywh {10 10 140 60} type Toggle
+        label {Enable NML
+(currently disabled)}
+        tooltip {Disable or enable NML.} xywh {10 10 140 60}
       }
       Fl_Text_Editor BlockedWindownamesEdit {
         label {Blocked Window Classes (one per line)}
-        tooltip {If a window's class is in this list, it'll be blocked.} xywh {10 100 295 140} align 5
+        tooltip {If a window's class is in this list, it'll be blocked.} xywh {10 118 295 140} align 5
       }
       Fl_Text_Editor BlockedWildcardsEdit {
-        label {Blocked Wildcards (one per line)} selected
-        tooltip {If any of these strings are found in a window's name, that window will be blocked.} xywh {10 270 295 130} align 5
+        label {Blocked Wildcards (one per line)}
+        tooltip {If any of these strings are found in a window's name, that window will be blocked.} xywh {10 280 295 130} align 5
       }
       Fl_Button OpenUpdatePage {
         label {Open Update Page}
-        callback {fl_open_uri("https://github.com/asolidtime/spyr/releases");}
+        callback {fl_open_uri("https://github.com/asolidtime/nomoreleeches/releases");}
         tooltip {Opens NML's download page. Make sure to get the newest version!} xywh {165 10 140 20}
         code0 {\#include <FL/filename.H>}
       }
@@ -39,17 +39,42 @@ class main_window {open
       }
       Fl_Text_Display {} {
         label {Window Name:}
-        xywh {10 377 50 30} box NO_BOX labelsize 13 align 6
+        xywh {10 395 50 30} box NO_BOX labelsize 13 align 6
       }
       Fl_Text_Display {} {
         label {Window Class:}
-        xywh {10 406 50 30} box NO_BOX labelsize 13 align 6
+        xywh {10 424 50 30} box NO_BOX labelsize 13 align 6
       }
       Fl_Output CurrentWindowNameOutput {
-        xywh {115 403 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+        xywh {115 421 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
       }
       Fl_Output CurrentWindowClassOutput {
-        xywh {115 432 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+        xywh {115 450 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+      }
+      Fl_Choice ColorThemeChooser {
+        label {Color Theme:} open selected
+        xywh {105 75 200 20} down_box BORDER_BOX
+      } {
+        MenuItem {} {
+          label Dark
+          xywh {0 0 34 24}
+        }
+        MenuItem {} {
+          label Black
+          xywh {0 0 34 24}
+        }
+        MenuItem {} {
+          label Gray
+          xywh {0 0 34 24}
+        }
+        MenuItem {} {
+          label Tan
+          xywh {0 0 34 24}
+        }
+        MenuItem {} {
+          label Shake
+          xywh {0 0 34 24}
+        }
       }
     }
   }
