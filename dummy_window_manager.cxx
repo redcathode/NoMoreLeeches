@@ -12,9 +12,9 @@ bool dummy_window_manager::is_currently_active_window_owned_by_us() {
 void dummy_window_manager::toggle_window_state(bool shouldUpdate) {
 
 }
-void minimize_active_window() {
+void dummy_window_manager::minimize_active_window() {
 
 }
-void show_active_window() {
+void dummy_window_manager::show_active_window() {
 
 }
