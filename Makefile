@@ -15,7 +15,8 @@ LINKFLTK_IMG = $(shell fltk-config --use-images --ldstaticflags)
 STRIP      = strip
 POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platforms, so safe to call
 ifeq ($(OS),Windows_NT)
-
+MAIN_DEPS = main.cxx main_window.h dummy_window_manager.h blocked_window.h theme_manager.h
+EXE_OBJ_DEPS = main.o main_window.o dummy_window_manager.o blocked_window.o theme_manager.o
 else
 MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
@@ -30,6 +31,9 @@ theme_manager.o: theme_manager.cxx theme_manager.h
 xlib_window_grab.o: xlib_window_grab.c xlib_window_grab.h  # a "plain" C file
 		$(CC) -c $< $(CCFLAGS)
 x11_window_manager.o: x11_window_manager.cxx x11_window_manager.h xlib_window_grab.h
+		$(CXX) -c $< $(CXXFLAGS)
+
+dummy_window_manager.o: dummy_window_manager.cxx dummy_window_manager.h
 		$(CXX) -c $< $(CXXFLAGS)
 
 main_window.o: main_window.cxx main_window.h  # a C++ file
