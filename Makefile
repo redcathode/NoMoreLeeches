@@ -3,8 +3,7 @@ CC  = $(shell fltk-config --cc)
 CXX = $(shell fltk-config --cxx)
 
 # Set the flags for compiler: fltk-config knows the basic settings, then we can add our own...
-CFLAGS   = -g $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall #-I/other/include/paths...
-CXXFLAGS = -g $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs #-I/other/include/paths...
+
 
 # We don't know what libraries to link with: fltk-config does...
 LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xmu) -lstdc++fs
@@ -17,9 +16,13 @@ POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platfor
 ifeq ($(OS),Windows_NT)
 MAIN_DEPS = main.cxx main_window.h dummy_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o main_window.o dummy_window_manager.o blocked_window.o theme_manager.o
+CFLAGS   = -g $(shell fltk-config --cflags) -Wall
+CXXFLAGS = -g $(shell fltk-config --cxxflags) -Wall -lstdc++fs
 else
 MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
+CFLAGS   = -g $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall
+CXXFLAGS = -g $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs
 endif
 
 # Define what your target application is called
