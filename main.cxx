@@ -19,6 +19,7 @@ namespace fs = std::experimental::filesystem;
 #ifdef _WIN32 // TODO: actual windows support
 #define DIRSEP "\\"
 #include "dummy_window_manager.h"
+dummy_window_manager *windowManager = new dummy_window_manager();
 #else
 #define DIRSEP "/"
 #include "x11_window_manager.h"
@@ -217,7 +218,7 @@ std::string getConfigDir() {
         // ????????
         exit(69);
   }
-  if (fs::is_directory(path) || !fs::exists(path)) { // Check if src folder exists
+  if (!fs::is_directory(path) && !fs::exists(path)) { // Check if src folder exists
     fs::create_directory(path); // create src folder
   }
   std::cout << "Config dir: " << path << std::endl;
