@@ -14,7 +14,12 @@ LINKFLTK_IMG = $(shell fltk-config --use-images --ldstaticflags)
 # Possible steps to run after linking...
 STRIP      = strip
 POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platforms, so safe to call
+ifeq ($(OS),Windows_NT)
 
+else
+MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
+EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
+endif
 
 # Define what your target application is called
 all: NoMoreLeeches
@@ -27,21 +32,18 @@ xlib_window_grab.o: xlib_window_grab.c xlib_window_grab.h  # a "plain" C file
 x11_window_manager.o: x11_window_manager.cxx x11_window_manager.h xlib_window_grab.h
 		$(CXX) -c $< $(CXXFLAGS)
 
-main_window.o: main_window.cxx main_window.h xlib_window_grab.h  # a C++ file
+main_window.o: main_window.cxx main_window.h  # a C++ file
 		$(CXX) -c $< $(CXXFLAGS)
 
 blocked_window.o: blocked_window.cxx blocked_window.h
 		$(CXX) -c $< $(CXXFLAGS)
 
-main.o: main.cxx main_window.h xlib_window_grab.h blocked_window.h theme_manager.h
+main.o: $(MAIN_DEPS)
 		$(CXX) -c $< $(CXXFLAGS)
 
 
-# Now define how to link the final app - let's assume it needs image and OpenGL support
-NoMoreLeeches:  main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
-		$(CXX) -o $@ main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o $(LINKFLTK)
-		# $(STRIP) $@
-		# $(POSTBUILD) $@  # only required on OSX, but call it anyway for portability
+NoMoreLeeches:  $(EXE_OBJ_DEPS)
+		$(CXX) -o $@ $(EXE_OBJ_DEPS) $(LINKFLTK)
 
 clean: 
 	rm *.o NoMoreLeeches

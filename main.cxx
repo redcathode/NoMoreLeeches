@@ -18,6 +18,8 @@ namespace fs = std::experimental::filesystem;
 
 #ifdef _WIN32 // TODO: actual windows support
 #define DIRSEP "\\"
+#include "dummy_window_manager.h"
+dummy_window_manager *windowManager = new dummy_window_manager();
 #else
 #define DIRSEP "/"
 #include "x11_window_manager.h"
