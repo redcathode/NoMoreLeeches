@@ -218,7 +218,7 @@ std::string getConfigDir() {
         // ????????
         exit(69);
   }
-  if (!fs::is_directory(path) && !fs::exists(path)) { // Check if src folder exists
+  if (!fs::exists(path)) { // Check if src folder exists
     fs::create_directory(path); // create src folder
   }
   std::cout << "Config dir: " << path << std::endl;
