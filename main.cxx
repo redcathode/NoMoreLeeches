@@ -207,7 +207,7 @@ std::string getConfigDir() {
   if (const char* env_p = std::getenv("APPDATA")) {
         std::cout << "Config dir: " << env_p << '\n';
         path.append(env_p);
-        path.append("\\nomoreleeches\\");
+        path.append("\\nomoreleeches");
   } else if (const char* env_p = std::getenv("XDG_CONFIG_HOME")) {
         path.append(env_p);
         path.append("/nomoreleeches/");
