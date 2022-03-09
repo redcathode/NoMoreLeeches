@@ -133,7 +133,7 @@ void tickWindowShowTimer(void*) {
     currentSecondsLeft = defaultSecondsLeft;
     currentOkClass = windowManager->active_window_class;
     deleteBlockedWindow();
-    windowManager->toggle_window_state(true);
+    windowManager->show_active_window();
   } else {
     Fl::repeat_timeout(1.0, tickWindowShowTimer);
   }
@@ -198,7 +198,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       blockedWindow->WindowHiddenDisplay->label(windowChar);
       //blockedWindow->make_window(0, 0, 250, 250);
       //std::cout << windowManager->focusedWindowX << std::endl;
-      windowManager->toggle_window_state(true);
+      windowManager->minimize_active_window();
       //blockedWindow->BlockWindow->border(0);
       // blockedWindow->BlockWindow->fullscreen();
       blockedWindow->BlockWindow->show();
