@@ -35,6 +35,7 @@ class x11_window_manager {
         void toggle_window_state(bool shouldUpdate);
         void minimize_active_window();
         void show_active_window();
+        void bring_nml_hidden_to_front(Fl_Window* win);
     private:
         Display* d;
         Window w;

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <windows.h>
+#include <FL/Fl.H>
+#include <FL/x.H>
 
 class win32_window_manager {
     public:
@@ -19,6 +21,7 @@ class win32_window_manager {
         void toggle_window_state(bool shouldUpdate);
         void minimize_active_window();
         void show_active_window();
+        void bring_nml_hidden_to_front(Fl_Window* win);
     private:
         bool windowIsMinimized = false;
         HWND currentWindow;

@@ -31,7 +31,7 @@ bool win32_window_manager::is_currently_active_window_owned_by_us() {
     GetWindowText(temp_win, temp_win_title, sizeof(temp_win_title));
     std::string tempStr;
     tempStr.assign(temp_win_title);
-    if (tempStr != active_window_name) {
+    if (tempStr == "FLTK") {
         return true;
     } else {
         return false;
@@ -45,4 +45,7 @@ void win32_window_manager::minimize_active_window() {
 }
 void win32_window_manager::show_active_window() {
 
+}
+void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
+    BringWindowToTop(fl_xid(win));
 }

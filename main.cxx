@@ -202,6 +202,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       //blockedWindow->BlockWindow->border(0);
       // blockedWindow->BlockWindow->fullscreen();
       blockedWindow->BlockWindow->show();
+      windowManager->bring_nml_hidden_to_front(blockedWindow->BlockWindow);
       blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
       Fl::add_timeout(1.0, tickWindowShowTimer);
       Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);

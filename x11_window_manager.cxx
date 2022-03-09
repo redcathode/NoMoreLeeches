@@ -69,3 +69,6 @@ void x11_window_manager::toggle_window_state(bool shouldUpdate) {
 
     //if (shouldUpdate) update();
 }
+void x11_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
+    // this isn't necessary on x11
+}
