@@ -14,7 +14,7 @@ namespace fs = std::experimental::filesystem;
 #include "main_window.h"
 #include "blocked_window.h"
 #include "theme_manager.h"
-#define WINDOW_CHECK_TIMES_PER_SECOND 0.1
+#define WINDOW_CHECK_TIMES_PER_SECOND 0.7
 
 #ifdef _WIN32
 #define DIRSEP "\\"
