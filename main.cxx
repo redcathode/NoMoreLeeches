@@ -92,6 +92,7 @@ bool isStringInWildcards(std::string& windowName) {
   return false;
 }
 void deleteBlockedWindow() {
+  std::cout << windowManager->active_window_class << ":" << windowManager->active_window_name << ":" << windowManager->is_currently_active_window_owned_by_us() << std::endl;
   if (blockedWindow != nullptr) { // this prevents a segfault if the function is called and blockedWindow is already deleted
     blockedWindow->BlockWindow->hide();
     delete blockedWindow;
