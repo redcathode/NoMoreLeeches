@@ -64,6 +64,12 @@ void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     //AttachThreadInput(our_pid, their_pid, true);
     //std::cout << "our pid: " << our_pid << ", their pid:" << their_pid << std::endl;
     //AllowSetForegroundWindow(our_pid);
+    brigWindowToFront(winapiWindow);
+    //SetWindowPos(winapiWindow, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE  | SWP_NOSIZE);
+    SetActiveWindow(winapiWindow);
+
+}
+void bringWindowToFront(HWND winapiWindow) {
     SetForegroundWindow(winapiWindow);
     HWND hCurWnd = GetForegroundWindow();
     DWORD dwMyID = GetCurrentThreadId();
@@ -75,8 +81,5 @@ void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     SetFocus(winapiWindow);
     SetActiveWindow(winapiWindow);
     AttachThreadInput(dwCurID, dwMyID, FALSE);
-    //SetWindowPos(winapiWindow, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE  | SWP_NOSIZE);
-    SetActiveWindow(winapiWindow);
-
-
 }
+
