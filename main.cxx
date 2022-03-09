@@ -236,7 +236,7 @@ void doThingWithWindows(void*) {
     Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
     return;
   }
-  //std::cout << currentOkClass << std::endl;
+  std::cout << "current ok class: " << currentOkClass << std::endl;
   if (blockedWindow == nullptr) {
     bool status = windowManager->update();
 
