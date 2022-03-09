@@ -102,9 +102,9 @@ void deleteBlockedWindow() {
 void minimizeWindowTimeout(void*) {
 //     blockedWindow->BlockWindow->show();
 //     blockedWindow->BlockWindow->resize(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
-    if (nmlActive) {
-      windowManager->minimize_active_window();
-    }
+//     if (nmlActive) {
+//       windowManager->minimize_active_window();
+//     }
     //deleteBlockedWindow();
     brieflyShowActive = false;
 }
