@@ -27,11 +27,11 @@ bool win32_window_manager::update() {
 }
 bool win32_window_manager::is_currently_active_window_owned_by_us() {
     HWND temp_win = GetForegroundWindow();
-    char temp_win_title[256];
-    GetWindowText(temp_win, temp_win_title, sizeof(temp_win_title));
+    char temp_win_class[256];
+    GetClassName(temp_win, temp_win_class, sizeof(temp_win_title));
     std::string tempStr;
 
-    tempStr.assign(temp_win_title);
+    tempStr.assign(temp_win_class);
     std::cout << tempStr << std::endl;
     if (tempStr == "FLTK" || tempStr == "Progman" || tempStr == "") {
         return true;
