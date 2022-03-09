@@ -6,11 +6,11 @@ win32_window_manager::win32_window_manager() {
 bool win32_window_manager::update() {
     char wnd_title[256];
     char wnd_class[256];
-    LPRECT tempRect;
+    RECT tempRect;
     currentWindow = GetForegroundWindow(); // get handle of currently active window
     GetWindowText(currentWindow, wnd_title, sizeof(wnd_title));
     GetClassName(currentWindow, wnd_class, sizeof(wnd_class));
-    GetWindowRect(currentWindow, tempRect);
+    GetWindowRect(currentWindow, &tempRect);
     std::string tempStr;
     tempStr.assign(wnd_class);
     if (tempStr == "") {
@@ -18,10 +18,10 @@ bool win32_window_manager::update() {
     } else {
         active_window_class.assign(wnd_class);
         active_window_name.assign(wnd_title);
-        focusedWindowX = tempRect->left;
-        focusedWindowY = tempRect->top;
-        focusedWindowWidth = tempRect->right - tempRect->left;
-        focusedWindowHeight = tempRect->bottom - tempRect->top;
+        focusedWindowX = tempRect.left;
+        focusedWindowY = tempRect.top;
+        focusedWindowWidth = tempRect.right - tempRect.left;
+        focusedWindowHeight = tempRect.bottom - tempRect.top;
         return true;
     }
 }
