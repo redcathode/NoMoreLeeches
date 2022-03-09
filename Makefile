@@ -16,8 +16,8 @@ POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platfor
 ifeq ($(OS),Windows_NT)
 MAIN_DEPS = main.cxx main_window.h win32_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o main_window.o win32_window_manager.o blocked_window.o theme_manager.o
-CFLAGS   = $(shell fltk-config --cflags) -Wall
-CXXFLAGS = $(shell fltk-config --cxxflags) -Wall -lstdc++fs
+CFLAGS   = $(shell fltk-config --cflags) -Wall -static-libgcc -static-libstdc++
+CXXFLAGS = $(shell fltk-config --cxxflags) -Wall -lstdc++fs -static-libgcc -static-libstdc++
 EXENAME = NoMoreLeeches.exe
 else
 MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
