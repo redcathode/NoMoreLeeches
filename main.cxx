@@ -308,8 +308,8 @@ int main(int argc, char **argv) {
   mainWindow->BlockedWindownamesEdit->buffer(windNamesBuf);
   mainWindow->ToggleNMLButton->callback(toggleNMLEnable);
   mainWindow->ColorThemeChooser->callback(set_theme_from_dropdown);
-  mainWindow->CurrentWindowClassOutput->value("(select a window)");
-  mainWindow->CurrentWindowNameOutput->value("(select a window)");
+  mainWindow->CurrentWindowClassOutput->value("(NML is disabled or no window is selected)");
+  mainWindow->CurrentWindowNameOutput->value("(NML is disabled or no window is selected)");
 
   w = mainWindow->NMLRootWindow;
   w->show(argc, argv);
