@@ -31,7 +31,7 @@ bool win32_window_manager::is_currently_active_window_owned_by_us() {
     GetWindowText(temp_win, temp_win_title, sizeof(temp_win_title));
     std::string tempStr;
     tempStr.assign(temp_win_title);
-    if (tempStr == "FLTK") {
+    if (tempStr != active_window_name) {
         return true;
     } else {
         return false;
