@@ -6,7 +6,6 @@ CXX = $(shell fltk-config --cxx)
 
 
 # We don't know what libraries to link with: fltk-config does...
-LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xmu) -lstdc++fs
 LINKFLTK_GL = $(shell fltk-config --use-gl --ldstaticflags)
 LINKFLTK_IMG = $(shell fltk-config --use-images --ldstaticflags)
 
