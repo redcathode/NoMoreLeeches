@@ -47,6 +47,7 @@ void win32_window_manager::minimize_active_window() {
 }
 void win32_window_manager::show_active_window() {
     PostMessage(currentWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
+    bringWindowToFront(currentWindow);
 }
 void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     char temp_win_name[256];
