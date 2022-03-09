@@ -69,7 +69,7 @@ void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     SetActiveWindow(winapiWindow);
 
 }
-void bringWindowToFront(HWND winapiWindow) {
+void win32_window_manager::bringWindowToFront(HWND winapiWindow) {
     SetForegroundWindow(winapiWindow);
     HWND hCurWnd = GetForegroundWindow();
     DWORD dwMyID = GetCurrentThreadId();

@@ -25,6 +25,7 @@ class win32_window_manager {
     private:
         bool windowIsMinimized = false;
         HWND currentWindow;
+        void bringWindowToFront(HWND winapiWindow);
 };
 
 #endif
