@@ -51,9 +51,9 @@ void win32_window_manager::show_active_window() {
 void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     char temp_win_name[256];
 
-    HWND win = fl_xid(win);
-    GetWindowText(win, temp_win_name, sizeof(temp_win_name));
+    HWND winapiWindow = fl_xid(win);
+    GetWindowText(winapiWindow, temp_win_name, sizeof(temp_win_name));
     std::cout << "bringing " << temp_win_name << " to front" << std::endl;
-    BringWindowToTop(win);
+    BringWindowToTop(winapiWindow);
 
 }
