@@ -203,7 +203,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       //blockedWindow->make_window(0, 0, 250, 250);
       //std::cout << windowManager->focusedWindowX << std::endl;
       windowManager->minimize_active_window();
-      blockedWindow->BlockWindow->set_non_modal();
+      //blockedWindow->BlockWindow->set_non_modal();
       //blockedWindow->BlockWindow->border(0);
       // blockedWindow->BlockWindow->fullscreen();
       blockedWindow->BlockWindow->show();
