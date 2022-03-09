@@ -49,8 +49,11 @@ void win32_window_manager::show_active_window() {
     PostMessage(currentWindow, WM_SYSCOMMAND, SC_RESTORE, 0);
 }
 void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
-    if (HWND tempWin = FindWindow("FLTK", "NML: Application Hidden")) {
-        std::cout << "bringing it to front" << std::endl;
-        BringWindowToTop(tempWin);
-    }
+    char temp_win_name[256];
+
+    HWND win = fl_xid(win);
+    GetWindowText(win, temp_win_name, sizeof(temp_win_name));
+    std::cout << "bringing " << temp_win_name << " to front" << std::endl;
+    BringWindowToTop(win);
+
 }

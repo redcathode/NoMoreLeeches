@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>           // `apt-get install libx11-dev`
 #include <X11/Xmu/WinUtil.h>    // `apt-get install libxmu-dev`
 #include <stdlib.h>
+#include <FL/Fl.H>
 #include <iostream>
 #include <fstream>
 // class main_window {

@@ -32,7 +32,7 @@ std::string configPath;
 main_window *mainWindow = new main_window();
 bool currentlyBlocking = false;
 blocked_window *blockedWindow = nullptr;
-int defaultSecondsLeft = 60;
+int defaultSecondsLeft = 7;
 int currentSecondsLeft = defaultSecondsLeft;
 bool timerIsStopped = true;
 std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
@@ -239,7 +239,7 @@ void doThingWithWindows(void*) {
     Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
     return;
   }
-  std::cout << "current ok class: " << currentOkClass << std::endl;
+  // std::cout << "current ok class: " << currentOkClass << std::endl;
   if (blockedWindow == nullptr) {
     bool status = windowManager->update();
 
