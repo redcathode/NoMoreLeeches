@@ -110,6 +110,7 @@ void minimizeWindowTimeout(void*) {
 }
 void showBrieflyCallback(Fl_Widget*) {
     windowManager->show_active_window();
+    std::cout << "deleting blocked window because show briefly callback" << std::endl;
     deleteBlockedWindow();
     currentSecondsLeft = defaultSecondsLeft;
     Fl::add_timeout(5.0, minimizeWindowTimeout);
@@ -133,6 +134,7 @@ void tickWindowShowTimer(void*) {
   if (currentSecondsLeft == 0) {
     currentSecondsLeft = defaultSecondsLeft;
     currentOkClass = windowManager->active_window_class;
+    std::cout << "deleting blocked window because timer is at 0" << std::endl;
     deleteBlockedWindow();
     windowManager->show_active_window();
   } else {
@@ -159,6 +161,7 @@ void toggleNMLEnable(Fl_Widget*) {
 }
 void blockingWindowCheckTimer(void*) {
   if (!windowManager->is_currently_active_window_owned_by_us()) {
+    std::cout << "deleting blocked window because currently active window isn't owned by us" << std::endl;
     deleteBlockedWindow();
   } else {
     Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);
