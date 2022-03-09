@@ -85,7 +85,7 @@ bool isStringInWildcards(std::string& windowName) {
   std::vector<std::string> wildcardList = split_string(wildcardsBuf.text(), "\n");
   for (std::string wildcardToCheck : wildcardList) {
     //std::cout << "Checking " << wildcardToCheck << " against " << windowName << std::endl;
-    if (strstr(windowName.c_str(), wildcardToCheck.c_str())) {
+    if (strstr(windowName.c_str(), wildcardToCheck.c_str()) && wildcardToCheck != "") {
       return true;
     }
   }
