@@ -14,12 +14,12 @@ namespace fs = std::experimental::filesystem;
 #include "main_window.h"
 #include "blocked_window.h"
 #include "theme_manager.h"
-#define WINDOW_CHECK_TIMES_PER_SECOND 0.5
+#define WINDOW_CHECK_TIMES_PER_SECOND 0.1
 
-#ifdef _WIN32 // TODO: actual windows support
+#ifdef _WIN32
 #define DIRSEP "\\"
-#include "dummy_window_manager.h"
-dummy_window_manager *windowManager = new dummy_window_manager();
+#include "win32_window_manager.h"
+win32_window_manager *windowManager = new win32_window_manager();
 #else
 #define DIRSEP "/"
 #include "x11_window_manager.h"
@@ -32,12 +32,13 @@ std::string configPath;
 main_window *mainWindow = new main_window();
 bool currentlyBlocking = false;
 blocked_window *blockedWindow = nullptr;
-int defaultSecondsLeft = 15;
-int currentSecondsLeft = 15;
+int defaultSecondsLeft = 60;
+int currentSecondsLeft = defaultSecondsLeft;
 bool timerIsStopped = true;
 std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
 int violations = 0;
 bool nmlActive = false;
+bool brieflyShowActive = false;
 char* strToChar(std::string& str) {
 //     std::vector<char> output(str.c_str(), str.c_str() + str.size() + 1);
 //     char *returnChar = reinterpret_cast<char*>(output.data());
@@ -100,16 +101,18 @@ void deleteBlockedWindow() {
 void minimizeWindowTimeout(void*) {
 //     blockedWindow->BlockWindow->show();
 //     blockedWindow->BlockWindow->resize(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
-    windowManager->minimize_active_window();
+    if (nmlActive) {
+      windowManager->minimize_active_window();
+    }
     //deleteBlockedWindow();
-    nmlActive = true;
+    brieflyShowActive = false;
 }
 void showBrieflyCallback(Fl_Widget*) {
     windowManager->show_active_window();
     deleteBlockedWindow();
     currentSecondsLeft = defaultSecondsLeft;
     Fl::add_timeout(5.0, minimizeWindowTimeout);
-    nmlActive = false;
+    brieflyShowActive = true;;
 }
 void blocklistSavedCallback(void*) {
   mainWindow->SaveBlocklistButton->label("Save Blocklists");
@@ -161,6 +164,7 @@ void blockingWindowCheckTimer(void*) {
   }
 }
 void makeBlockedWindow(bool wasBlockedBecauseClass) {
+  if (!brieflyShowActive) {
       currentSecondsLeft = defaultSecondsLeft;
       currentlyBlocking = true;
       blockedWindow = new blocked_window();
@@ -201,6 +205,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
       Fl::add_timeout(1.0, tickWindowShowTimer);
       Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);
+  }
 }
 std::string getConfigDir() {
   std::string path;

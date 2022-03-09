@@ -1,20 +1,31 @@
-#include "dummy_window_manager.h"
+#include "win32_window_manager.h"
 
-dummy_window_manager::dummy_window_manager() {
+win32_window_manager::win32_window_manager() {
     // do nothing.
 }
-bool dummy_window_manager::update() {
+bool win32_window_manager::update() {
+    char wnd_title[256];
+    char wnd_class[256];
+    currentWindow = GetForegroundWindow(); // get handle of currently active window
+    GetWindowText(currentWindow, wnd_title, sizeof(wnd_title));
+    GetClassName(currentWindow, wnd_class, sizeof(wnd_class));
+    active_window_class.assign(wnd_class);
+    active_window_name.assign(wnd_title);
     return true;
 }
-bool dummy_window_manager::is_currently_active_window_owned_by_us() {
+bool win32_window_manager::is_currently_active_window_owned_by_us() {
+//     HWND temp_win = GetForegroundWindow();
+//     char temp_win_title[256];
+//     std::string tempStr;
+//     tempStr.assign(temp_win_title);
     return false;
 }
-void dummy_window_manager::toggle_window_state(bool shouldUpdate) {
+void win32_window_manager::toggle_window_state(bool shouldUpdate) {
 
 }
-void dummy_window_manager::minimize_active_window() {
+void win32_window_manager::minimize_active_window() {
 
 }
-void dummy_window_manager::show_active_window() {
+void win32_window_manager::show_active_window() {
 
 }

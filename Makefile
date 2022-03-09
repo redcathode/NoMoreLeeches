@@ -16,13 +16,13 @@ POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platfor
 ifeq ($(OS),Windows_NT)
 MAIN_DEPS = main.cxx main_window.h dummy_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o main_window.o dummy_window_manager.o blocked_window.o theme_manager.o
-CFLAGS   = -g $(shell fltk-config --cflags) -Wall
-CXXFLAGS = -g $(shell fltk-config --cxxflags) -Wall -lstdc++fs
+CFLAGS   = $(shell fltk-config --cflags) -Wall
+CXXFLAGS = $(shell fltk-config --cxxflags) -Wall -lstdc++fs
 else
 MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
 EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
-CFLAGS   = -g $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall
-CXXFLAGS = -g $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs
+CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall
+CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs
 endif
 
 # Define what your target application is called
@@ -51,6 +51,7 @@ main.o: $(MAIN_DEPS)
 
 NoMoreLeeches:  $(EXE_OBJ_DEPS)
 		$(CXX) -o $@ $(EXE_OBJ_DEPS) $(LINKFLTK)
+		$(STRIP) ./NoMoreLeeches
 
 clean: 
 	rm *.o NoMoreLeeches
