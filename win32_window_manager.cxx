@@ -6,11 +6,11 @@ win32_window_manager::win32_window_manager() {
 bool win32_window_manager::update() {
     char wnd_title[256];
     char wnd_class[256];
-    RECT tempRect;
+    LPRECT tempRect;
     currentWindow = GetForegroundWindow(); // get handle of currently active window
     GetWindowText(currentWindow, wnd_title, sizeof(wnd_title));
     GetClassName(currentWindow, wnd_class, sizeof(wnd_class));
-    GetWindowRect(currentWindow, &tempRect);
+    GetWindowRect(currentWindow, tempRect);
     std::string tempStr;
     tempStr.assign(wnd_class);
     if (tempStr == "") {
