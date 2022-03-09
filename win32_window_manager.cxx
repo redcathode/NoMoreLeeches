@@ -33,7 +33,7 @@ bool win32_window_manager::is_currently_active_window_owned_by_us() {
 
     tempStr.assign(temp_win_class);
     std::cout << tempStr << std::endl;
-    if (tempStr == "FLTK" || tempStr == "Progman" || tempStr == "") {
+    if (tempStr == "FLTK") {
         return true;
     } else {
         return false;
