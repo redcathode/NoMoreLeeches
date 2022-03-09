@@ -56,7 +56,7 @@ void win32_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
     std::cout << "bringing " << temp_win_name << " to front" << std::endl;
     /*AttachThreadInput(GetWindowThreadProcessId(winapiWindow), GetWindowThreadProcessId(currentWindow))*/;
     DWORD pid = 0;
-    GetWindowThreadProcessId(winapiWindow, &pid)
+    GetWindowThreadProcessId(winapiWindow, &pid);
     AllowSetForegroundWindow(pid);
     SetForegroundWindow(winapiWindow);
     SetActiveWindow(winapiWindow);
