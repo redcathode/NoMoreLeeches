@@ -25,7 +25,7 @@ bool x11_window_manager::update() {
             focusedWindowWidth = xwa.width;
             focusedWindowHeight = xwa.height;
             // std::cout << "X" << xwa.x << std::endl;
-            std::cout << "[x11_window_manager::update] window class: " << active_window_class << ", window name: " << active_window_name << std::endl;
+            // std::cout << "[x11_window_manager::update] window class: " << active_window_class << ", window name: " << active_window_name << std::endl;
             return true;
         } else {
             return false;
@@ -43,7 +43,7 @@ bool x11_window_manager::is_currently_active_window_owned_by_us() {
         if (windowCmp == "FLTK") {
             return true;
         } else {
-            std::cout << "[x11_window_manager::is_currently_active_window_owned_by_us] currently active window isn't owned by us, it's owned by " << windowCmp << std::endl;
+            // std::cout << "[x11_window_manager::is_currently_active_window_owned_by_us] currently active window isn't owned by us, it's owned by " << windowCmp << std::endl;
             return false;
         }
 
