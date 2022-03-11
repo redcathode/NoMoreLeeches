@@ -1,6 +1,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
+#include <FL/fl_ask.H>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -14,8 +15,8 @@ namespace fs = std::experimental::filesystem;
 #include "main_window.h"
 #include "blocked_window.h"
 #include "theme_manager.h"
-#define WINDOW_CHECK_TIMES_PER_SECOND 0.7
-
+#include "select_time_popup.h"
+#define WINDOW_CHECK_TIMES_PER_SECOND 0.1
 #ifdef _WIN32
 #define DIRSEP "\\"
 #include "win32_window_manager.h"
@@ -30,16 +31,26 @@ Fl_Text_Buffer wildcardsBuf;
 Fl_Text_Buffer windNamesBuf;
 std::string configPath;
 main_window *mainWindow = new main_window();
+select_time_popup *selectTimePopup = nullptr;
 bool currentlyBlocking = false;
 blocked_window *blockedWindow = nullptr;
-int defaultSecondsLeft = 7;
+int defaultSecondsLeft = 60;
 int currentSecondsLeft = defaultSecondsLeft;
 bool timerIsStopped = true;
+bool currentlyInLockdownMode = false;
+int lockdownModeSecondsLeft = 0;
+int currentColorScheme = 0;
 std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
 
 int violations = 0;
 bool nmlActive = false;
 bool brieflyShowActive = false;
+void writeStringToFile(std::string& string, std::string& file) {
+  std::ofstream fileOutputStream;
+  fileOutputStream.open(configPath + DIRSEP + file, std::fstream::out | std::fstream::trunc);
+  fileOutputStream << string;
+  fileOutputStream.close();
+}
 char* strToChar(std::string& str) {
 //     std::vector<char> output(str.c_str(), str.c_str() + str.size() + 1);
 //     char *returnChar = reinterpret_cast<char*>(output.data());
@@ -58,9 +69,13 @@ bool str_replace(std::string& str, const std::string& from, const std::string& t
 }
 void setTimer(int time) {
   std::string timerText;
-  timerText = "If you really want to access this window,\nwait secks:flushed: seconds.";
-  std::string timerNum = std::to_string(time);
-  str_replace(timerText, "secks:flushed:", timerNum);
+  if (time > 0) {
+    timerText = "If you really want to access this window,\nwait secks:flushed: seconds.";
+    std::string timerNum = std::to_string(time);
+    str_replace(timerText, "secks:flushed:", timerNum);
+  } else {
+    timerText = "You can't access this window.";
+  }
   char *timerChar = strToChar(timerText);
   blockedWindow->WaitDisplay->label(timerChar);
 }
@@ -151,15 +166,89 @@ void save_blocklists(Fl_Widget*) {
   wildcardsFile << wildcardsBuf.text();
   windowNamesFile << windNamesBuf.text();
   mainWindow->SaveBlocklistButton->label("Saved.");
+  std::string delayStr = mainWindow->BlockedWindowDelayInput->value();
+  if (delayStr != "") {
+    defaultSecondsLeft = std::stoi(delayStr);
+    std::string filename = "delaySecs.txt";
+    writeStringToFile(delayStr, filename);
+  }
   Fl::add_timeout(0.7, blocklistSavedCallback);
 }
-void toggleNMLEnable(Fl_Widget*) {
+void toggleEnabled() {
   nmlActive = !nmlActive;
   if (nmlActive) {
     mainWindow->ToggleNMLButton->label("Disable NML\n(currently enabled)");
   } else {
     mainWindow->ToggleNMLButton->label("Enable NML\n(currently disabled)");
   }
+}
+void toggleNMLEnable(Fl_Widget*) {
+  toggleEnabled();
+}
+void deleteSelectTimePopup() {
+  selectTimePopup->SelectTimePopup->hide();
+  delete selectTimePopup;
+  selectTimePopup = nullptr;
+}
+void updateLockdownModeCountdown() {
+  int hours, minutes, seconds;
+  seconds = lockdownModeSecondsLeft;
+  minutes = seconds / 60;
+  hours = minutes / 60;
+
+  std::stringstream tempName;
+  tempName << hours << " hours, " << minutes << " minutes, " << int(seconds % 60) << " seconds left." << std::endl;
+  std::string evenMoreTempName = tempName.str();
+  selectTimePopup->WaitDisplay->label(strToChar(evenMoreTempName));
+}
+void decreaseTimeByOne(void*) {
+  lockdownModeSecondsLeft -= 1;
+  if (lockdownModeSecondsLeft == 0) {
+    mainWindow->NMLRootWindow->show();
+    toggleEnabled();
+    deleteSelectTimePopup();
+  } else {
+    updateLockdownModeCountdown();
+    Fl::repeat_timeout(1.0, decreaseTimeByOne);
+  }
+}
+void lockdownWindowCloseAttemptCallback(Fl_Widget* widget, void*) {
+}
+void selectTimePopupWasOk(Fl_Widget*) {
+  std::cout << "hrs: " << selectTimePopup->LockdownHoursInput->value() << " mins: " << selectTimePopup->LockdownMinutesInput->value() << std::endl;
+  std::string setHours = selectTimePopup->LockdownHoursInput->value();
+  std::string setMinutes = selectTimePopup->LockdownMinutesInput->value();
+  if (setMinutes != "" && setHours != "") {
+    int hours = std::stoi(setHours);
+    int minutes = std::stoi(setMinutes);
+    if (minutes >= 0 && hours >= 0 && hours + minutes > 0) {
+      lockdownModeSecondsLeft = (hours * 3600) + (minutes * 60);
+      std::cout << lockdownModeSecondsLeft << std::endl;
+      selectTimePopup->Cancel->hide();
+      selectTimePopup->OK->hide();
+      selectTimePopup->LockdownHoursInput->hide();
+      selectTimePopup->LockdownMinutesInput->hide();
+      selectTimePopup->MinutesDisplay->hide();
+      selectTimePopup->WaitDisplay->show();
+      selectTimePopup->SelectTimePopup->label("NML: Lockdown");
+      mainWindow->NMLRootWindow->hide();
+      selectTimePopup->SelectTimePopup->callback(lockdownWindowCloseAttemptCallback);
+      updateLockdownModeCountdown();
+      nmlActive = true;
+      Fl::add_timeout(1.0, decreaseTimeByOne);
+    }
+  }
+}
+void enterLockdownMode(Fl_Widget*) {
+  if (selectTimePopup != nullptr) {
+    deleteSelectTimePopup();
+  }
+  selectTimePopup = new select_time_popup();
+  selectTimePopup->make_window();
+  selectTimePopup->SelectTimePopup->show();
+  selectTimePopup->OK->callback(selectTimePopupWasOk);
+  selectTimePopup->LockdownHoursInput->value("0");
+  selectTimePopup->LockdownMinutesInput->value("0");
 }
 void blockingWindowCheckTimer(void*) {
   if (!windowManager->is_currently_active_window_owned_by_us()) {
@@ -212,6 +301,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       blockedWindow->BlockWindow->show();
       windowManager->bring_nml_hidden_to_front(blockedWindow->BlockWindow);
       blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
+      Fl::remove_timeout(tickWindowShowTimer);
       Fl::add_timeout(1.0, tickWindowShowTimer);
       Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);
   }
@@ -243,7 +333,7 @@ void doThingWithWindows(void*) {
     Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
     return;
   }
-  std::cout << "current ok class: " << currentOkClass << std::endl;
+  //std::cout << "current ok class: " << currentOkClass << std::endl;
   if (blockedWindow == nullptr) {
     bool status = windowManager->update();
 
@@ -291,18 +381,39 @@ void doThingWithWindows(void*) {
 void set_theme_from_dropdown(Fl_Widget* w, long i) {
   theme_manager::loadColorScheme(mainWindow->ColorThemeChooser->value());
   std::cout << "theme set to " << mainWindow->ColorThemeChooser->value() << std::endl;
+  std::string filename = "theme.txt";
+  std::string intToWrite = std::to_string(mainWindow->ColorThemeChooser->value());
+  writeStringToFile(intToWrite, filename);
 }
-
 int main(int argc, char **argv) {
   configPath = getConfigDir();
   std::ofstream wildcardsFile;
   std::ofstream windowNamesFile;
+  std::ofstream themeFile;
+  std::ofstream delayFile;
   wildcardsFile.open(configPath + DIRSEP + "wildcardsList.txt", std::fstream::in | std::fstream::out | std::fstream::app);
   windowNamesFile.open(configPath + DIRSEP + "windowNamesList.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+  themeFile.open(configPath + DIRSEP + "theme.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+  delayFile.open(configPath + DIRSEP + "delaySecs.txt", std::fstream::in | std::fstream::out | std::fstream::app);
   std::stringstream wildBuf;
   std::stringstream windBuf;
+  std::stringstream themeBuf;
+  std::stringstream delayBuf;
+  themeBuf << themeFile.rdbuf();
+  delayBuf << delayFile.rdbuf();
   wildBuf << wildcardsFile.rdbuf();
   windBuf << windowNamesFile.rdbuf();
+  std::string themeStr = themeBuf.str();
+  std::string delayStr = delayBuf.str();
+  if (delayStr != "") {
+    defaultSecondsLeft = std::stoi(delayStr);
+  }
+  std::string delayString = std::to_string(defaultSecondsLeft);
+  mainWindow->BlockedWindowDelayInput->value(strToChar(delayString));
+  if (themeStr != "") {
+    currentColorScheme = std::stoi(themeStr);
+    mainWindow->ColorThemeChooser->value(currentColorScheme);
+  }
   const std::string argh1 = wildBuf.str();
   const std::string argh2 = windBuf.str();
   const char* wildText = argh1.c_str();
@@ -319,12 +430,12 @@ int main(int argc, char **argv) {
   mainWindow->ColorThemeChooser->callback(set_theme_from_dropdown);
   mainWindow->CurrentWindowClassOutput->value("(NML is disabled or no window is selected)");
   mainWindow->CurrentWindowNameOutput->value("(NML is disabled or no window is selected)");
-
+  mainWindow->LockdownButton->callback(enterLockdownMode);
   w = mainWindow->NMLRootWindow;
   w->show(argc, argv);
   
   Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
   Fl::scheme("gtk+");
-  theme_manager::loadColorScheme(0);
+  theme_manager::loadColorScheme(currentColorScheme);
   return Fl::run();
 }

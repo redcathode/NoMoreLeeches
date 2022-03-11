@@ -13,15 +13,15 @@ LINKFLTK_IMG = $(shell fltk-config --use-images --ldstaticflags)
 STRIP      = strip
 POSTBUILD  = fltk-config --post # Required on OSX, does nothing on other platforms, so safe to call
 ifeq ($(OS),Windows_NT)
-MAIN_DEPS = main.cxx main_window.h win32_window_manager.h blocked_window.h theme_manager.h
-EXE_OBJ_DEPS = main.o main_window.o win32_window_manager.o blocked_window.o theme_manager.o
+MAIN_DEPS = main.cxx main_window.h win32_window_manager.h blocked_window.h theme_manager.h select_time_popup.h
+EXE_OBJ_DEPS = main.o main_window.o win32_window_manager.o blocked_window.o theme_manager.o select_time_popup.o
 CFLAGS   = $(shell fltk-config --cflags) -Wall -static
 CXXFLAGS = $(shell fltk-config --cxxflags) -Wall -lstdc++fs -static
 EXENAME = NoMoreLeeches.exe
 LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xmu) -lstdc++fs -static
 else
-MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h
-EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o
+MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h select_time_popup.h
+EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o select_time_popup.o
 CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall
 CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs
 EXENAME = NoMoreLeeches
@@ -32,6 +32,8 @@ endif
 all: NoMoreLeeches
 
 # Define how to build the various object files...
+select_time_popup.o: select_time_popup.cxx select_time_popup.h
+		$(CXX) -c $< $(CXXFLAGS)
 theme_manager.o: theme_manager.cxx theme_manager.h
 		$(CXX) -c $< $(CXXFLAGS)
 xlib_window_grab.o: xlib_window_grab.c xlib_window_grab.h  # a "plain" C file

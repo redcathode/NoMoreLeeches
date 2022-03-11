@@ -19,17 +19,17 @@ Fl_Menu_Item main_window::menu_ColorThemeChooser[] = {
 };
 
 main_window::main_window() {
-  { NMLRootWindow = new Fl_Window(315, 485, "NoMoreLeeches v0.1");
+  { NMLRootWindow = new Fl_Window(315, 555, "NoMoreLeeches v0.1");
     NMLRootWindow->labelfont(4);
     NMLRootWindow->user_data((void*)(this));
     { ToggleNMLButton = new Fl_Button(10, 10, 140, 60, "Enable NML\n(currently disabled)");
       ToggleNMLButton->tooltip("Disable or enable NML.");
     } // Fl_Button* ToggleNMLButton
-    { BlockedWindownamesEdit = new Fl_Text_Editor(10, 118, 295, 140, "Blocked Window Classes (one per line)");
+    { BlockedWindownamesEdit = new Fl_Text_Editor(10, 150, 295, 140, "Blocked Window Classes (one per line)");
       BlockedWindownamesEdit->tooltip("If a window\'s class is in this list, it\'ll be blocked.");
       BlockedWindownamesEdit->align(Fl_Align(FL_ALIGN_TOP_LEFT));
     } // Fl_Text_Editor* BlockedWindownamesEdit
-    { BlockedWildcardsEdit = new Fl_Text_Editor(10, 280, 295, 130, "Blocked Wildcards (one per line)");
+    { BlockedWildcardsEdit = new Fl_Text_Editor(10, 312, 295, 130, "Blocked Wildcards (one per line)");
       BlockedWildcardsEdit->tooltip("If any of these strings are found in a window\'s name, that window will be bl\
 ocked.");
       BlockedWildcardsEdit->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -41,34 +41,41 @@ ocked.");
     { OpenAboutPage = new Fl_Button(165, 30, 140, 20, "About");
       OpenAboutPage->tooltip("Show information about NML.");
     } // Fl_Button* OpenAboutPage
-    { SaveBlocklistButton = new Fl_Button(165, 50, 140, 20, "Save Blocklist");
+    { SaveBlocklistButton = new Fl_Button(165, 50, 140, 20, "Save Block Options");
     } // Fl_Button* SaveBlocklistButton
-    { Fl_Text_Display* o = new Fl_Text_Display(10, 395, 50, 30, "Window Name:");
+    { Fl_Text_Display* o = new Fl_Text_Display(10, 457, 50, 30, "Window Name:");
       o->box(FL_NO_BOX);
       o->labelsize(13);
       o->align(Fl_Align(FL_ALIGN_BOTTOM_LEFT));
     } // Fl_Text_Display* o
-    { Fl_Text_Display* o = new Fl_Text_Display(10, 424, 50, 30, "Window Class:");
+    { Fl_Text_Display* o = new Fl_Text_Display(10, 486, 50, 30, "Window Class:");
       o->box(FL_NO_BOX);
       o->labelsize(13);
       o->align(Fl_Align(FL_ALIGN_BOTTOM_LEFT));
     } // Fl_Text_Display* o
-    { CurrentWindowNameOutput = new Fl_Output(115, 421, 189, 28);
+    { CurrentWindowNameOutput = new Fl_Output(115, 483, 189, 28);
       CurrentWindowNameOutput->labeltype(FL_NO_LABEL);
       CurrentWindowNameOutput->labelfont(4);
       CurrentWindowNameOutput->textfont(4);
       CurrentWindowNameOutput->textsize(10);
     } // Fl_Output* CurrentWindowNameOutput
-    { CurrentWindowClassOutput = new Fl_Output(115, 450, 189, 28);
+    { CurrentWindowClassOutput = new Fl_Output(115, 512, 189, 28);
       CurrentWindowClassOutput->labeltype(FL_NO_LABEL);
       CurrentWindowClassOutput->labelfont(4);
       CurrentWindowClassOutput->textfont(4);
       CurrentWindowClassOutput->textsize(10);
     } // Fl_Output* CurrentWindowClassOutput
-    { ColorThemeChooser = new Fl_Choice(105, 75, 200, 20, "Color Theme:");
+    { ColorThemeChooser = new Fl_Choice(105, 107, 200, 20, "Color Theme:");
       ColorThemeChooser->down_box(FL_BORDER_BOX);
       ColorThemeChooser->menu(menu_ColorThemeChooser);
     } // Fl_Choice* ColorThemeChooser
+    { LockdownButton = new Fl_Button(10, 75, 295, 25, "ENTER LOCKDOWN MODE");
+    } // Fl_Button* LockdownButton
+    { BlockedWindowDelayInput = new Fl_Int_Input(170, 448, 135, 28, "Blocked window delay:");
+      BlockedWindowDelayInput->tooltip("The amount of time you\'ll need to wait before a blocked window is shown. Set\
+ this to a negative number to hide them forever.");
+      BlockedWindowDelayInput->type(2);
+    } // Fl_Int_Input* BlockedWindowDelayInput
     NMLRootWindow->end();
   } // Fl_Window* NMLRootWindow
 }

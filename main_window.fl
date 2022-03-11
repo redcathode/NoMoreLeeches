@@ -8,7 +8,7 @@ class main_window {open
   } {
     Fl_Window NMLRootWindow {
       label {NoMoreLeeches v0.1} open
-      xywh {1434 32 315 485} type Single labelfont 4 visible
+      xywh {1434 32 315 555} type Single labelfont 4 hide
     } {
       Fl_Button ToggleNMLButton {
         label {Enable NML
@@ -17,11 +17,11 @@ class main_window {open
       }
       Fl_Text_Editor BlockedWindownamesEdit {
         label {Blocked Window Classes (one per line)}
-        tooltip {If a window's class is in this list, it'll be blocked.} xywh {10 118 295 140} align 5
+        tooltip {If a window's class is in this list, it'll be blocked.} xywh {10 150 295 140} align 5
       }
       Fl_Text_Editor BlockedWildcardsEdit {
         label {Blocked Wildcards (one per line)}
-        tooltip {If any of these strings are found in a window's name, that window will be blocked.} xywh {10 280 295 130} align 5
+        tooltip {If any of these strings are found in a window's name, that window will be blocked.} xywh {10 312 295 130} align 5
       }
       Fl_Button OpenUpdatePage {
         label {Open Update Page}
@@ -34,26 +34,26 @@ class main_window {open
         tooltip {Show information about NML.} xywh {165 30 140 20}
       }
       Fl_Button SaveBlocklistButton {
-        label {Save Blocklist}
+        label {Save Block Options}
         xywh {165 50 140 20}
       }
       Fl_Text_Display {} {
         label {Window Name:}
-        xywh {10 395 50 30} box NO_BOX labelsize 13 align 6
+        xywh {10 457 50 30} box NO_BOX labelsize 13 align 6
       }
       Fl_Text_Display {} {
         label {Window Class:}
-        xywh {10 424 50 30} box NO_BOX labelsize 13 align 6
+        xywh {10 486 50 30} box NO_BOX labelsize 13 align 6
       }
       Fl_Output CurrentWindowNameOutput {
-        xywh {115 421 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+        xywh {115 483 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
       }
       Fl_Output CurrentWindowClassOutput {
-        xywh {115 450 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
+        xywh {115 512 189 28} labeltype NO_LABEL labelfont 4 textfont 4 textsize 10
       }
       Fl_Choice ColorThemeChooser {
-        label {Color Theme:} open selected
-        xywh {105 75 200 20} down_box BORDER_BOX
+        label {Color Theme:} open
+        xywh {105 107 200 20} down_box BORDER_BOX
       } {
         MenuItem {} {
           label Dark
@@ -75,6 +75,14 @@ class main_window {open
           label Shake
           xywh {0 0 34 24}
         }
+      }
+      Fl_Button LockdownButton {
+        label {ENTER LOCKDOWN MODE}
+        xywh {10 75 295 25}
+      }
+      Fl_Input BlockedWindowDelayInput {
+        label {Blocked window delay:}
+        tooltip {The amount of time you'll need to wait before a blocked window is shown. Set this to a negative number to hide them forever.} xywh {170 448 135 28} type Int
       }
     }
   }

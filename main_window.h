@@ -10,6 +10,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Choice.H>
+#include <FL/Fl_Int_Input.H>
 
 class main_window {
 public:
@@ -29,5 +30,7 @@ public:
   Fl_Output *CurrentWindowClassOutput;
   Fl_Choice *ColorThemeChooser;
   static Fl_Menu_Item menu_ColorThemeChooser[];
+  Fl_Button *LockdownButton;
+  Fl_Int_Input *BlockedWindowDelayInput;
 };
 #endif

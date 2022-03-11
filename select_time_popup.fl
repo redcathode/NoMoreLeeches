@@ -1,0 +1,41 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0308
+header_name {.h}
+code_name {.cxx}
+class select_time_popup {open
+} {
+  Function {make_window()} {open
+  } {
+    Fl_Window SelectTimePopup {
+      label {Select Time} open selected
+      xywh {1135 470 425 125} type Single
+      code0 {//SelectTimePopup->set_modal();} visible
+    } {
+      Fl_Input LockdownHoursInput {
+        label {Enter lockdown for: }
+        xywh {155 17 65 28} type Int
+      }
+      Fl_Input LockdownMinutesInput {
+        label {hours,}
+        xywh {270 17 35 28} type Int
+      }
+      Fl_Text_Display MinutesDisplay {
+        label minutes
+        xywh {367 16 75 30} box NO_BOX align 4
+      }
+      Fl_Button OK {
+        label OK
+        xywh {272 93 70 25}
+      }
+      Fl_Button Cancel {
+        label Cancel
+        callback {SelectTimePopup->hide();}
+        xywh {350 93 70 25}
+      }
+      Fl_Text_Display WaitDisplay {
+        label {Wait xx hours, yy minutes.}
+        xywh {0 68 425 40} box NO_BOX hide
+      }
+    }
+  }
+}
