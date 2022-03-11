@@ -432,6 +432,7 @@ int main(int argc, char **argv) {
   mainWindow->CurrentWindowNameOutput->value("(NML is disabled or no window is selected)");
   mainWindow->LockdownButton->callback(enterLockdownMode);
   w = mainWindow->NMLRootWindow;
+  toggleEnabled();
   w->show(argc, argv);
   
   Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
