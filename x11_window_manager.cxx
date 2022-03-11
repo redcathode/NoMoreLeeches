@@ -18,7 +18,6 @@ bool x11_window_manager::update() {
             active_window_class.assign(windclass);
             XWindowAttributes xwa;
             XGetWindowAttributes(d, w, &xwa);
-            int winPos[2]; 
             Window root;
             root =  XRootWindow(d, 0);
             Window child;
@@ -59,6 +58,9 @@ void x11_window_manager::minimize_active_window() {
 void x11_window_manager::show_active_window() {
     windowIsMinimized = false;
     restore_window(w, d);
+    std::cout << "Raising window" << std::endl;
+    XRaiseWindow(d, w);
+    XFlush(d);
 }
 
 void x11_window_manager::toggle_window_state(bool shouldUpdate) {
@@ -73,5 +75,6 @@ void x11_window_manager::toggle_window_state(bool shouldUpdate) {
     //if (shouldUpdate) update();
 }
 void x11_window_manager::bring_nml_hidden_to_front(Fl_Window* win) {
-    // this isn't necessary on x11
+    restore_window(fl_xid(win), d);
+    XRaiseWindow(d, fl_xid(win));
 }

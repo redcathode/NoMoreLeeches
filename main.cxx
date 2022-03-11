@@ -36,6 +36,7 @@ int defaultSecondsLeft = 7;
 int currentSecondsLeft = defaultSecondsLeft;
 bool timerIsStopped = true;
 std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
+
 int violations = 0;
 bool nmlActive = false;
 bool brieflyShowActive = false;
@@ -137,6 +138,7 @@ void tickWindowShowTimer(void*) {
     std::cout << "deleting blocked window because timer is at 0" << std::endl;
     deleteBlockedWindow();
     windowManager->show_active_window();
+    //windowManager->show_active_window();
   } else {
     Fl::repeat_timeout(1.0, tickWindowShowTimer);
   }
@@ -206,6 +208,7 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       //blockedWindow->BlockWindow->set_non_modal();
       //blockedWindow->BlockWindow->border(0);
       // blockedWindow->BlockWindow->fullscreen();
+      //blockedWindow->BlockWindow->set_non_modal();
       blockedWindow->BlockWindow->show();
       windowManager->bring_nml_hidden_to_front(blockedWindow->BlockWindow);
       blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
@@ -240,7 +243,7 @@ void doThingWithWindows(void*) {
     Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
     return;
   }
-  // std::cout << "current ok class: " << currentOkClass << std::endl;
+  std::cout << "current ok class: " << currentOkClass << std::endl;
   if (blockedWindow == nullptr) {
     bool status = windowManager->update();
 

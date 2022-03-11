@@ -168,13 +168,11 @@ void minimize_window(Window w, Display* d) {
   XGetWindowAttributes(d, w, &attr);
   screen = XScreenNumberOfScreen(attr.screen);
   XIconifyWindow(d, w, screen);
-  int B;
-  XGetInputFocus(d, &w, &B);
+
 }
 void restore_window(Window w, Display* d) {
   XMapRaised(d, w);
-  int B;
-  XGetInputFocus(d, &w, &B);
+  XSetInputFocus(d, w, RevertToNone, CurrentTime);
 }
 // int main(void){
 //   Display* d;
