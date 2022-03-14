@@ -11,6 +11,15 @@ NoMoreLeeches is a relatively simple tool to help improve your productivity by b
 - Regular blocking (keep this window focused if you like staring at the 'Application Blocked' window)
 - Very small footprint (uses under 3MB of memory and under 1MB of disk space)
 
+## Building
+On Linux, you'll need xlib/libx11, fltk, libxmu, and their respective development libraries installed. (todo: list packages on debian, arch, and mingw)  
+On Windows, you'll need the MSYS2 MINGW64 shell. Install `mingw-w64-fltk` and GCC.  
+```
+git clone https://github.com/asolidtime/nomoreleeches.git
+cd nomoreleeches
+make
+```
+The resulting binary, `NoMoreLeeches` or `NoMoreLeeches.exe`, will be in the current directory.
 ## Tutorial
 i'll work on this later
 
