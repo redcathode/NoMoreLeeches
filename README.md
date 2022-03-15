@@ -9,7 +9,7 @@ NoMoreLeeches is a relatively simple tool to help improve your productivity by b
 - Color themes!
 - Delay blocking (keep this window focused for XX seconds to see this window)
 - Regular blocking (keep this window focused if you like staring at the 'Application Blocked' window)
-- Very small footprint (uses under 3MB of memory and under 1MB of disk space)
+- Very small footprint (uses under 4MB of memory and under 2MB of disk space)
 
 ## Building
 On Linux, you'll need xlib/libx11, fltk, libxmu, and their respective development libraries installed. (todo: list packages on debian, arch, and mingw)  
