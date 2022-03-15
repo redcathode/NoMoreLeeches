@@ -22,8 +22,8 @@ LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xm
 else
 MAIN_DEPS = main.cxx main_window.h x11_window_manager.h blocked_window.h theme_manager.h select_time_popup.h
 EXE_OBJ_DEPS = main.o xlib_window_grab.o main_window.o x11_window_manager.o blocked_window.o theme_manager.o select_time_popup.o
-CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall
-CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs
+CFLAGS   = $(shell fltk-config --cflags) $(shell pkg-config --libs x11 xmu) -Wall -static
+CXXFLAGS = $(shell fltk-config --cxxflags) $(shell pkg-config --libs x11 xmu) -Wall -lstdc++fs -static
 EXENAME = NoMoreLeeches
 LINKFLTK = $(shell fltk-config --ldstaticflags) $(shell pkg-config --libs x11 xmu) -lstdc++fs
 endif

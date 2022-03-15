@@ -55,9 +55,8 @@ char* strToChar(std::string& str) {
 //     std::vector<char> output(str.c_str(), str.c_str() + str.size() + 1);
 //     char *returnChar = reinterpret_cast<char*>(output.data());
 //     return returnChar;
-  str = str + "\0";
-  char *returnChar = new char[str.size() + 1];
-  std::copy(str.begin(), str.end(), returnChar);
+  char *returnChar = new char[1024];
+  strcpy(returnChar, str.c_str());
   return returnChar;
 }
 bool str_replace(std::string& str, const std::string& from, const std::string& to) {
