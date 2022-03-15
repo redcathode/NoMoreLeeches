@@ -196,7 +196,7 @@ void updateLockdownModeCountdown() {
   hours = minutes / 60;
 
   std::stringstream tempName;
-  tempName << int(hours % 60) << " hour(s), " << int(minutes % 60) << " minute(s), " << int(seconds % 60) << " second(s) left.";
+  tempName << int(hours % 60) << " hours, " << int(minutes % 60) << " minutes, " << int(seconds % 60) << " seconds left.";
   std::string evenMoreTempName = tempName.str();
   selectTimePopup->WaitDisplay->label(strToChar(evenMoreTempName));
 }

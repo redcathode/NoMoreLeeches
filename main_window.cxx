@@ -9,6 +9,13 @@ void main_window::cb_OpenUpdatePage(Fl_Button* o, void* v) {
   ((main_window*)(o->parent()->user_data()))->cb_OpenUpdatePage_i(o,v);
 }
 
+void main_window::cb_OpenAboutPage_i(Fl_Button*, void*) {
+  fl_open_uri("https://github.com/asolidtime/nomoreleeches/");
+}
+void main_window::cb_OpenAboutPage(Fl_Button* o, void* v) {
+  ((main_window*)(o->parent()->user_data()))->cb_OpenAboutPage_i(o,v);
+}
+
 Fl_Menu_Item main_window::menu_ColorThemeChooser[] = {
  {"Dark", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {"Black", 0,  0, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
@@ -38,8 +45,9 @@ ocked.");
       OpenUpdatePage->tooltip("Opens NML\'s download page. Make sure to get the newest version!");
       OpenUpdatePage->callback((Fl_Callback*)cb_OpenUpdatePage);
     } // Fl_Button* OpenUpdatePage
-    { OpenAboutPage = new Fl_Button(165, 30, 140, 20, "About");
+    { OpenAboutPage = new Fl_Button(165, 30, 140, 20, "GitHub page");
       OpenAboutPage->tooltip("Show information about NML.");
+      OpenAboutPage->callback((Fl_Callback*)cb_OpenAboutPage);
     } // Fl_Button* OpenAboutPage
     { SaveBlocklistButton = new Fl_Button(165, 50, 140, 20, "Save Block Options");
     } // Fl_Button* SaveBlocklistButton

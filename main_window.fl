@@ -30,7 +30,8 @@ class main_window {open
         code0 {\#include <FL/filename.H>}
       }
       Fl_Button OpenAboutPage {
-        label About
+        label {GitHub page}
+        callback {fl_open_uri("https://github.com/asolidtime/nomoreleeches/");} selected
         tooltip {Show information about NML.} xywh {165 30 140 20}
       }
       Fl_Button SaveBlocklistButton {

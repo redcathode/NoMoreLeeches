@@ -25,6 +25,10 @@ private:
   static void cb_OpenUpdatePage(Fl_Button*, void*);
 public:
   Fl_Button *OpenAboutPage;
+private:
+  inline void cb_OpenAboutPage_i(Fl_Button*, void*);
+  static void cb_OpenAboutPage(Fl_Button*, void*);
+public:
   Fl_Button *SaveBlocklistButton;
   Fl_Output *CurrentWindowNameOutput;
   Fl_Output *CurrentWindowClassOutput;
