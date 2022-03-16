@@ -36,6 +36,7 @@ See [TUTORIAL.md](https://github.com/asolidtime/NoMoreLeeches/blob/main/TUTORIAL
 - MacOS support
 - consistently use a casing scheme (probably stick with camelCase)
 - accessibility support
+- clean up makefile, use makedepends or GCC for autodetecting dependencies rather than doing it manually 
 
 ## Notes on Wayland support
 Wayland doesn't support normal desktop apps getting info on other active apps for security reasons, and I doubt that'll change any time soon, so apps running natively on Wayland won't be detected. You'll have to force said apps to run on XWayland for them to be detected by NML. This can be done through environment variables for most toolkits (`GDK_BACKEND=x11` on GTK, `QT_QPA_PLATFORM=xcb` on Qt).
