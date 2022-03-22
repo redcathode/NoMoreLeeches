@@ -1,56 +1,60 @@
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
-#include <FL/fl_ask.H>
-#include <stdlib.h>
-#include <iostream>
-#include <fstream>
-#include <experimental/filesystem> // or #include <filesystem> for C++17 and up
-#include <algorithm>
+#include <FL/Fl.H> // include the main FLTK GUI library
+#include <FL/Fl_Window.H> // regular windows
+#include <FL/Fl_Box.H> // rectangular boxes
+#include <FL/fl_ask.H> // popups
+#include <stdlib.h> // c++ standard library
+#include <iostream> // reading and writing to files and strings
+#include <fstream> // same as above
+#include <experimental/filesystem> // interfacing with the config files - #include <filesystem> for C++17 and up
+#include <algorithm> // searching through strings
 
     
-namespace fs = std::experimental::filesystem;
+namespace fs = std::experimental::filesystem; // easier to type
 
 
-#include "main_window.h"
-#include "blocked_window.h"
-#include "theme_manager.h"
+#include "main_window.h" // code for the app's main window
+#include "blocked_window.h" // code for the app's 'application blocked' window
+#include "theme_manager.h" // code for selecting color themes
 #include "select_time_popup.h"
-#define WINDOW_CHECK_TIMES_PER_SECOND 0.1
-#ifdef _WIN32
+#define WINDOW_CHECK_INTERVAL 0.1 // the interval at which the app checks for windows that should be blocked
+#ifdef _WIN32 // if on Windows, use the win32_window_manager to create the windowManager object that'll be used to detect blocked windows
 #define DIRSEP "\\"
 #include "win32_window_manager.h"
 win32_window_manager *windowManager = new win32_window_manager();
 #else
 #define DIRSEP "/"
-#include "x11_window_manager.h"
+#include "x11_window_manager.h" // otherwise, use the x11_window_manager object to do the same
 x11_window_manager *windowManager = new x11_window_manager();
 #endif
 
-Fl_Text_Buffer wildcardsBuf;
-Fl_Text_Buffer windNamesBuf;
-std::string configPath;
-main_window *mainWindow = new main_window();
-select_time_popup *selectTimePopup = nullptr;
-bool currentlyBlocking = false;
-blocked_window *blockedWindow = nullptr;
-int defaultSecondsLeft = 60;
-int currentSecondsLeft = defaultSecondsLeft;
-bool timerIsStopped = true;
-bool currentlyInLockdownMode = false;
-int lockdownModeSecondsLeft = 0;
-int currentColorScheme = 0;
-std::string currentOkClass = "hopefully there isn't a window matching this text exactly";
+Fl_Text_Buffer wildcardsBuf; // text buffer for the editable list of window wildcards
+Fl_Text_Buffer windNamesBuf; // text buffer for the editable list of window classes
+std::string configPath; // the path to the app's configuration folder
+main_window *mainWindow = new main_window(); // the main window (an instance of main_window.cxx)
+select_time_popup *selectTimePopup = nullptr; // an instance of select_time_popup.cxx, currently not initialized
+bool currentlyBlocking = false; // whether or not the app is currently blocking windows
+blocked_window *blockedWindow = nullptr; // same as select_time_popup but for blocked_window.cxx
+int defaultSecondsLeft = 60; // the default amount of seconds that a window will be blocked for (60)
+int currentSecondsLeft = defaultSecondsLeft; // the current amount of seconds left on the block timer, defaults to defaultSecondsLeft (duh)
+bool timerIsStopped = true; // whether or not the currentSecondsLeft timer is stopped
+bool currentlyInLockdownMode = false; // whether or not the app is currently in lockdown mode
+int lockdownModeSecondsLeft = 0; // seconds left in lockdown mode
+int currentColorScheme = 0; // index of the current color scheme (0-4, see theme_manager.cxx and theme_manager.h)
+std::string currentOkClass = "hopefully there isn't a window matching this text exactly"; // the window that's currently exempt from blocking. Used to prevent the app from instantly blocking a window after it's shown. This is set after a window's block timer expires and changed after the user defocuses the window
 
-int violations = 0;
-bool nmlActive = false;
-bool brieflyShowActive = false;
-void writeStringToFile(std::string& string, std::string& file) {
+// int violations = 0;
+bool nmlActive = false; // whether or not the app is currently enabled
+bool brieflyShowActive = false; // whether or not the "show window for 5 seconds" timer is active
+
+// write a std::string to a file
+void writeStringToFile(std::string& string, std::string& file) { 
   std::ofstream fileOutputStream;
   fileOutputStream.open(configPath + DIRSEP + file, std::fstream::out | std::fstream::trunc);
   fileOutputStream << string;
   fileOutputStream.close();
 }
+
+// convert a std::string to a char*
 char* strToChar(std::string& str) {
 //     std::vector<char> output(str.c_str(), str.c_str() + str.size() + 1);
 //     char *returnChar = reinterpret_cast<char*>(output.data());
@@ -59,6 +63,8 @@ char* strToChar(std::string& str) {
   strcpy(returnChar, str.c_str());
   return returnChar;
 }
+
+// replace a phrase (from) with another phrase (to) within a string (str)
 bool str_replace(std::string& str, const std::string& from, const std::string& to) {
     size_t start_pos = str.find(from);
     if(start_pos == std::string::npos)
@@ -66,6 +72,8 @@ bool str_replace(std::string& str, const std::string& from, const std::string& t
     str.replace(start_pos, from.length(), to);
     return true;
 }
+
+// set the 'If you want to access this window, wait X seconds' text, where time is X
 void setTimer(int time) {
   std::string timerText;
   if (time > 0) {
@@ -78,9 +86,9 @@ void setTimer(int time) {
   char *timerChar = strToChar(timerText);
   blockedWindow->WaitDisplay->label(timerChar);
 }
-std::vector<std::string> split_string(const std::string& str,
-                                      const std::string& delimiter)
-{
+
+// split a string into a vector of strings given the string and the delimiter to split it by
+std::vector<std::string> split_string(const std::string& str, const std::string& delimiter) {
     std::vector<std::string> strings;
 
     std::string::size_type pos = 0;
@@ -96,6 +104,8 @@ std::vector<std::string> split_string(const std::string& str,
 
     return strings;
 }
+
+// check if a std::string exists within the list of window wildcards
 bool isStringInWildcards(std::string& windowName) {
   std::vector<std::string> wildcardList = split_string(wildcardsBuf.text(), "\n");
   for (std::string wildcardToCheck : wildcardList) {
@@ -106,6 +116,8 @@ bool isStringInWildcards(std::string& windowName) {
   }
   return false;
 }
+
+// delete the blockedWindow object and hide the window associated with it, freeing it for future use
 void deleteBlockedWindow() {
   std::cout << windowManager->active_window_class << ":" << windowManager->active_window_name << ":" << windowManager->is_currently_active_window_owned_by_us() << std::endl;
   if (blockedWindow != nullptr) { // this prevents a segfault if the function is called and blockedWindow is already deleted
@@ -114,6 +126,8 @@ void deleteBlockedWindow() {
     blockedWindow = nullptr;
   }
 }
+
+// set brieflyShowActive to false. This is called 5 seconds after the 'Briefly show window' button is pressed.
 void minimizeWindowTimeout(void*) {
 //     blockedWindow->BlockWindow->show();
 //     blockedWindow->BlockWindow->resize(windowManager->focusedWindowX, windowManager->focusedWindowY, windowManager->focusedWindowWidth, windowManager->focusedWindowHeight);
@@ -123,6 +137,8 @@ void minimizeWindowTimeout(void*) {
     //deleteBlockedWindow();
     brieflyShowActive = false;
 }
+
+// callback to briefly show the window, called when the 'show window briefly' button is pressed
 void showBrieflyCallback(Fl_Widget*) {
     windowManager->show_active_window();
     std::cout << "deleting blocked window because show briefly callback" << std::endl;
@@ -131,10 +147,13 @@ void showBrieflyCallback(Fl_Widget*) {
     Fl::add_timeout(5.0, minimizeWindowTimeout);
     brieflyShowActive = true;;
 }
+
+// When the 'save blocklists' button is pressed, it temporarily changes the button's title to "Saved". This changes it back.
 void blocklistSavedCallback(void*) {
   mainWindow->SaveBlocklistButton->label("Save Blocklists");
 }
 
+// This function 'ticks' the timer that shows the window after defaultSecondsLeft seconds
 void tickWindowShowTimer(void*) {
   if (blockedWindow == nullptr) {
     return;
@@ -157,6 +176,8 @@ void tickWindowShowTimer(void*) {
     Fl::repeat_timeout(1.0, tickWindowShowTimer);
   }
 }
+
+// This saves the lists of blocked window names and classes to .txt files in the app's config dir.
 void save_blocklists(Fl_Widget*) {
   std::ofstream wildcardsFile;
   std::ofstream windowNamesFile;
@@ -173,6 +194,8 @@ void save_blocklists(Fl_Widget*) {
   }
   Fl::add_timeout(0.7, blocklistSavedCallback);
 }
+
+// Toggle NML being enabled.
 void toggleEnabled() {
   nmlActive = !nmlActive;
   if (nmlActive) {
@@ -181,14 +204,20 @@ void toggleEnabled() {
     mainWindow->ToggleNMLButton->label("Enable NML\n(currently disabled)");
   }
 }
+
+// Allows the above function to be called from an FLTK callback.
 void toggleNMLEnable(Fl_Widget*) {
   toggleEnabled();
 }
+
+// Hides, deletes, and frees selectTimePopup
 void deleteSelectTimePopup() {
   selectTimePopup->SelectTimePopup->hide();
   delete selectTimePopup;
   selectTimePopup = nullptr;
 }
+
+// sets the lockdown mode's window's timer text. 
 void updateLockdownModeCountdown() {
   int hours, minutes, seconds;
   seconds = lockdownModeSecondsLeft;
@@ -200,6 +229,8 @@ void updateLockdownModeCountdown() {
   std::string evenMoreTempName = tempName.str();
   selectTimePopup->WaitDisplay->label(strToChar(evenMoreTempName));
 }
+
+// Decreases the lockdown mode timer's seconds. Called when lockdown mode is enabled, and calls itself every second until the timer finishes.
 void decreaseTimeByOne(void*) {
   lockdownModeSecondsLeft -= 1;
   if (lockdownModeSecondsLeft == 0) {
@@ -211,8 +242,11 @@ void decreaseTimeByOne(void*) {
     Fl::repeat_timeout(1.0, decreaseTimeByOne);
   }
 }
-void lockdownWindowCloseAttemptCallback(Fl_Widget* widget, void*) {
-}
+
+// FLTK window close callback that doesn't do anything. Used by the lockdown mode window.
+void lockdownWindowCloseAttemptCallback(Fl_Widget* widget, void*) {}
+
+// If lockdown mode is started with a valid time, this function is called to hide the other windows and start lockdown.
 void selectTimePopupWasOk(Fl_Widget*) {
   std::cout << "hrs: " << selectTimePopup->LockdownHoursInput->value() << " mins: " << selectTimePopup->LockdownMinutesInput->value() << std::endl;
   std::string setHours = selectTimePopup->LockdownHoursInput->value();
@@ -238,6 +272,8 @@ void selectTimePopupWasOk(Fl_Widget*) {
     }
   }
 }
+
+// This function opens the popup that allows the user to select the time to enter lockdown mode for
 void enterLockdownMode(Fl_Widget*) {
   if (selectTimePopup != nullptr) {
     deleteSelectTimePopup();
@@ -249,14 +285,18 @@ void enterLockdownMode(Fl_Widget*) {
   selectTimePopup->LockdownHoursInput->value("0");
   selectTimePopup->LockdownMinutesInput->value("0");
 }
+
+// If the blocked window is active, this will be called every WINDOW_CHECK_INTERVAL seconds. Will hide the window if it's not focused.
 void blockingWindowCheckTimer(void*) {
   if (!windowManager->is_currently_active_window_owned_by_us()) {
     std::cout << "deleting blocked window because currently active window isn't owned by us" << std::endl;
     deleteBlockedWindow();
   } else {
-    Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);
+    Fl::repeat_timeout(WINDOW_CHECK_INTERVAL, blockingWindowCheckTimer);
   }
 }
+
+// This function will make and show the blocked window. The boolean input tells it whether the window was blocked because of its class or its name.
 void makeBlockedWindow(bool wasBlockedBecauseClass) {
   if (!brieflyShowActive) {
       currentSecondsLeft = defaultSecondsLeft;
@@ -302,9 +342,11 @@ void makeBlockedWindow(bool wasBlockedBecauseClass) {
       blockedWindow->ShowBrieflyButton->callback(showBrieflyCallback);
       Fl::remove_timeout(tickWindowShowTimer);
       Fl::add_timeout(1.0, tickWindowShowTimer);
-      Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, blockingWindowCheckTimer);
+      Fl::add_timeout(WINDOW_CHECK_INTERVAL, blockingWindowCheckTimer);
   }
 }
+
+// Gets the app's config dir, returns a std::string
 std::string getConfigDir() {
   std::string path;
   if (const char* env_p = std::getenv("APPDATA")) {
@@ -327,9 +369,11 @@ std::string getConfigDir() {
   std::cout << "Config dir: " << path << std::endl;
   return path;
 }
+
+// This is the function that actually checks if a window should be blocked, and pops up the blocked window if it does.
 void doThingWithWindows(void*) {
   if (!nmlActive) {
-    Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
+    Fl::repeat_timeout(WINDOW_CHECK_INTERVAL, doThingWithWindows);
     return;
   }
   //std::cout << "current ok class: " << currentOkClass << std::endl;
@@ -338,7 +382,7 @@ void doThingWithWindows(void*) {
 
     if (status && (windowManager->active_window_class == currentOkClass || windowManager->is_currently_active_window_owned_by_us())) {
       //std::cout << "active window class: " << windowManager->active_window_class << std::endl;
-      Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
+      Fl::repeat_timeout(WINDOW_CHECK_INTERVAL, doThingWithWindows);
       return;
     } else {
       currentOkClass = "hopefully there isn't a window matching this text exactly";
@@ -374,9 +418,10 @@ void doThingWithWindows(void*) {
   //   mainWindow->CurrentWindowNameOutput->value("(error getting window name)");
   // }
 
-  Fl::repeat_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
+  Fl::repeat_timeout(WINDOW_CHECK_INTERVAL, doThingWithWindows);
 }
 
+// This callback is called when the theme dropdown has an item selected. It calls on functions in theme_manager.cxx that change the color scheme, passing the dropdown's selected index as a parameter.
 void set_theme_from_dropdown(Fl_Widget* w, long i) {
   theme_manager::loadColorScheme(mainWindow->ColorThemeChooser->value());
   std::cout << "theme set to " << mainWindow->ColorThemeChooser->value() << std::endl;
@@ -384,7 +429,10 @@ void set_theme_from_dropdown(Fl_Widget* w, long i) {
   std::string intToWrite = std::to_string(mainWindow->ColorThemeChooser->value());
   writeStringToFile(intToWrite, filename);
 }
+
+// The app's main method.
 int main(int argc, char **argv) {
+  // This snippet opens the app's config files and reads their values into variables.
   configPath = getConfigDir();
   std::ofstream wildcardsFile;
   std::ofstream windowNamesFile;
@@ -413,6 +461,7 @@ int main(int argc, char **argv) {
     currentColorScheme = std::stoi(themeStr);
     mainWindow->ColorThemeChooser->value(currentColorScheme);
   }
+  
   const std::string argh1 = wildBuf.str();
   const std::string argh2 = windBuf.str();
   const char* wildText = argh1.c_str();
@@ -420,7 +469,7 @@ int main(int argc, char **argv) {
   wildcardsBuf.text(wildText);
   windNamesBuf.text(windText);
 
-  
+  // This snippet creates the blocked window, sets callbacks, sets the text editing buffers to point to local variables, sets default values, and shows the window.
   Fl_Window* w;
   mainWindow->SaveBlocklistButton->callback(save_blocklists);
   mainWindow->BlockedWildcardsEdit->buffer(wildcardsBuf);
@@ -434,7 +483,8 @@ int main(int argc, char **argv) {
   toggleEnabled();
   w->show(argc, argv);
   
-  Fl::add_timeout(WINDOW_CHECK_TIMES_PER_SECOND, doThingWithWindows);
+  // Finally, we set the configured color scheme and set the widget scheme to GTK+, start the window check timer, and then run the application.
+  Fl::add_timeout(WINDOW_CHECK_INTERVAL, doThingWithWindows);
   Fl::scheme("gtk+");
   theme_manager::loadColorScheme(currentColorScheme);
   return Fl::run();
