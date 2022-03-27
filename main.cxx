@@ -46,6 +46,10 @@ std::string currentOkClass = "hopefully there isn't a window matching this text 
 bool nmlActive = false; // whether or not the app is currently enabled
 bool brieflyShowActive = false; // whether or not the "show window for 5 seconds" timer is active
 
+std::vector<std::string> wildcardList; // the list of blocked wildcards
+std::vector<std::string> classBlockList;
+
+
 // write a std::string to a file
 void writeStringToFile(std::string& string, std::string& file) { 
   std::ofstream fileOutputStream;
@@ -107,7 +111,6 @@ std::vector<std::string> split_string(const std::string& str, const std::string&
 
 // check if a std::string exists within the list of window wildcards
 bool isStringInWildcards(std::string& windowName) {
-  std::vector<std::string> wildcardList = split_string(wildcardsBuf.text(), "\n");
   for (std::string wildcardToCheck : wildcardList) {
     //std::cout << "Checking " << wildcardToCheck << " against " << windowName << std::endl;
     if (strstr(windowName.c_str(), wildcardToCheck.c_str()) && wildcardToCheck != "") {
@@ -179,6 +182,9 @@ void tickWindowShowTimer(void*) {
 
 // This saves the lists of blocked window names and classes to .txt files in the app's config dir.
 void save_blocklists(Fl_Widget*) {
+  wildcardList = split_string(wildcardsBuf.text(), "\n");
+  classBlockList = split_string(windNamesBuf.text(), "\n");
+
   std::ofstream wildcardsFile;
   std::ofstream windowNamesFile;
   wildcardsFile.open(configPath + DIRSEP + "wildcardsList.txt", std::fstream::out | std::fstream::trunc);
@@ -393,7 +399,6 @@ void doThingWithWindows(void*) {
       mainWindow->CurrentWindowNameOutput->value(windowManager->active_window_name.c_str());
     }
 
-  std::vector<std::string> classBlockList = split_string(windNamesBuf.text(), "\n");
   if (std::count(classBlockList.begin(), classBlockList.end(), windowManager->active_window_class)) {
     //std::cout << "h" << std::endl;
     //
@@ -487,5 +492,9 @@ int main(int argc, char **argv) {
   Fl::add_timeout(WINDOW_CHECK_INTERVAL, doThingWithWindows);
   Fl::scheme("gtk+");
   theme_manager::loadColorScheme(currentColorScheme);
+
+  wildcardList = split_string(wildcardsBuf.text(), "\n"); // populate the wildcard list and class blocklist from the text of the editable buffers
+  classBlockList = split_string(windNamesBuf.text(), "\n");
+
   return Fl::run();
 }
